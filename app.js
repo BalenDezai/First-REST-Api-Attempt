@@ -6,7 +6,6 @@ import mongoose from 'mongoose';
 import seedDB from './lib/utils/seedDB';
 import peopleRoute from './routes/peopleRouter';
 import walletRoute from './routes/walletRouter';
-import authRoute from './Controllers/authController';
 import bodyParser from 'body-parser';
 
 
