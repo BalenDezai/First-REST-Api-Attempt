@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon --exec babel-node -- ./app.js",
-    "dev": "set DEBUG=app,app:*,seed & nodemon --exec babel-node -- ./app.js "
+    "dev": "set DEBUG=app,app:*,seed & nodemon --exec babel-node -- ./app.js ",
+    "lint": "node_modules/.bin/eslint lib/utils/seedDB.js"
   },
   "author": "",
   "license": "ISC",
@@ -24,6 +25,10 @@
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-preset-env": "^1.7.0",
+    "eslint": "^4.19.1",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-plugin-import": "^2.12.0",
+    
     "nodemon": "^1.17.5"
   }
 }

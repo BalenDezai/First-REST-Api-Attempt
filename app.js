@@ -1,12 +1,12 @@
-import dotenv from  'dotenv';
+import dotenv from 'dotenv';
 import express from 'express';
 import serverDebug from 'debug';
 import morgan from 'morgan';
 import mongoose from 'mongoose';
+import bodyParser from 'body-parser';
 import seedDB from './lib/utils/seedDB';
 import peopleRoute from './routes/peopleRouter';
 import walletRoute from './routes/walletRouter';
-import bodyParser from 'body-parser';
 
 
 dotenv.config();
@@ -17,7 +17,7 @@ const port = process.env.PORT || 3000;
 
 mongoose.connect(process.env.DB_URL);
 
-//app.use(bodyParser.urlencoded({extended: false}));
+//  app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 
 seedDB();

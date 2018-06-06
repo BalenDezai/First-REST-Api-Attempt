@@ -7,19 +7,19 @@ const personSchema = new mongoose.Schema({
   Links: [{
     rel: String,
     href: String,
-    type: String
+    type: String,
   }],
   _Wallet: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Wallet'
+    ref: 'Wallet',
   },
   _Job: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Job'
+    ref: 'Job',
   },
   _Work: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Work'
+    ref: 'Work',
   },
 });
 
