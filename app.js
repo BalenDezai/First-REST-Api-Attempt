@@ -25,7 +25,7 @@ app.use(morgan('combined'));
 
 
 app.use('/people', peopleRoute);
-app.use('/wallet', walletRoute);
+app.use('/people/:id/wallet', walletRoute);
 
 
 app.listen(port, () => {

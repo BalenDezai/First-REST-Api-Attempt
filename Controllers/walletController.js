@@ -1,12 +1,15 @@
 import bookControllerDebug from 'debug';
 import Wallet from '../models/wallet';
+import hateaos from '../lib/utils/HyperMediaLinksGenerator';
 
 const debug = bookControllerDebug('app:peopleController');
 
 const peopleController = {
   FindResource: async (req, res) => {
     try {
-      const foundPeople = await Wallet.find(req.query);
+      const foundPeople = await Wallet.find({ _Owner: req.params.id });
+      console.log(foundPeople);
+      hateaos(req.hostname, req.originalUrl, foundPeople._id);
       if (foundPeople.length > 0) {
         res.json(foundPeople);
       } else {

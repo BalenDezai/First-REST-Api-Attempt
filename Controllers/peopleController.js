@@ -6,7 +6,7 @@ const debug = bookControllerDebug('app:peopleController');
 const peopleController = {
   FindResource: async (req, res) => {
     try {
-      const foundPeople = await Person.find(req.query).populate('_Job').populate('_Wallet').populate('_Work');
+      const foundPeople = await Person.find(req.query);
       if (foundPeople.length > 0) {
         res.json(foundPeople);
       } else {
