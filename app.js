@@ -7,6 +7,7 @@ import bodyParser from 'body-parser';
 import seedDB from './lib/utils/seedDB';
 import peopleRoute from './routes/peopleRouter';
 import walletRoute from './routes/walletRouter';
+import jobRoute from './routes/jobRouter';
 
 
 dotenv.config();
@@ -26,6 +27,7 @@ app.use(morgan('combined'));
 
 app.use('/people', peopleRoute);
 app.use('/people/:id/wallet', walletRoute);
+app.use('/people/:id/job', jobRoute);
 
 
 app.listen(port, () => {

@@ -12,7 +12,7 @@ walletRouter.route('/')
 
 walletRouter.route('/:walletId')
   .get(walletController.FindResourceById)
-  .post(MessageService(405, 'Use /wallet/ only to create a new resource'))
+  .post(MessageService(405, 'Cannot craete a wallet'))
   .put(walletController.UpdateResource)
   .delete(MessageService(405, 'Cannot delete a wallet'));
 

@@ -8,9 +8,9 @@ const peopleController = {
   FindResource: async (req, res) => {
     try {
       const foundPeople = await Person.find(req.query);
-      const endpoins = ['self', 'wallet']
+      const endpoins = ['self', 'wallet', 'job'];
       hlGenerator(foundPeople, req.headers.host, req.originalUrl, endpoins);
-      
+
       if (foundPeople.length > 0) {
         res.json(foundPeople);
       } else {
@@ -27,7 +27,7 @@ const peopleController = {
       const foundPerson = await Person.findById(req.params.id);
       res.json(foundPerson);
     } catch (error) {
-      debug(error)
+      debug(error);
       res.status(204).send('No such resource exists');
     }
   },
@@ -45,7 +45,7 @@ const peopleController = {
 
   UpdateResource: async (req, res) => {
     try {
-      await Person.findByIdAndUpdate(req.params.id, req.body)
+      await Person.findByIdAndUpdate(req.params.id, req.body);
       res.status(200).send('Resource Updated');
     } catch (error) {
       debug(error);

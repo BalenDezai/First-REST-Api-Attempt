@@ -1,8 +1,8 @@
-import bookControllerDebug from 'debug';
+import walletControllerDebug from 'debug';
 import Wallet from '../models/wallet';
 import hlGenerator from '../lib/utils/HyperMediaLinksGenerator';
 
-const debug = bookControllerDebug('app:peopleController');
+const debug = walletControllerDebug('app:walletController');
 
 const walletController = {
   FindResource: async (req, res) => {
@@ -18,8 +18,8 @@ const walletController = {
 
   FindResourceById: async (req, res) => {
     try {
-      const foundPerson = await Wallet.findById(req.params.id);
-      res.json(foundPerson);
+      const foundWallet = await Wallet.findById(req.params.id);
+      res.json(foundWallet);
     } catch (error) {
       res.status(204).send('No such resource exists');
     }
