@@ -5,12 +5,8 @@ const workSchema = new mongoose.Schema({
   EndDate: Date,
   WorkHoursThisYear: Number,
   TotalHours: Number,
-  _Owner: {
-    id: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Person',
-    },
-  },
+  _Owner: String,
+  Links: [],
 });
 
 export default mongoose.model('Work', workSchema);

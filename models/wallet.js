@@ -5,12 +5,8 @@ const walletSchema = new mongoose.Schema({
   Pay: Number,
   LastMonthPay: Number,
   ThisMonthPay: Number,
-  _Owner: {
-    id: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Person',
-    },
-  },
+  _Owner: String,
+  Links: [],
 });
 
 export default mongoose.model('Wallet', walletSchema);

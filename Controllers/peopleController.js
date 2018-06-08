@@ -1,5 +1,6 @@
 import bookControllerDebug from 'debug';
 import Person from '../models/person';
+import hlGenerator from '../lib/utils/HyperMediaLinksGenerator';
 
 const debug = bookControllerDebug('app:peopleController');
 
@@ -7,6 +8,9 @@ const peopleController = {
   FindResource: async (req, res) => {
     try {
       const foundPeople = await Person.find(req.query);
+      const endpoins = ['self', 'wallet']
+      hlGenerator(foundPeople, req.headers.host, req.originalUrl, endpoins);
+      
       if (foundPeople.length > 0) {
         res.json(foundPeople);
       } else {

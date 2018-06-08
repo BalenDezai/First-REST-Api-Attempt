@@ -2,18 +2,18 @@ import express from 'express';
 import walletController from '../Controllers/walletController';
 import MessageService from '../lib/utils/MessageService';
 
-const router = express.Router();
+const walletRouter = express.Router({ mergeParams: true });
 
-router.route('/')
+walletRouter.route('/')
   .get(walletController.FindResource)
-  .post(walletController.CreateResource)
+  .post(MessageService(405, 'Cannot create a new wallet'))
   .put(MessageService(405, 'Use /wallet/ID to update specific resource'))
-  .delete(MessageService(405, 'Use /wallet/ID to delete specific resource'));
+  .delete(MessageService(405, 'Cannot delete a wallet'));
 
-router.route('/:id')
+walletRouter.route('/:walletId')
   .get(walletController.FindResourceById)
   .post(MessageService(405, 'Use /wallet/ only to create a new resource'))
   .put(walletController.UpdateResource)
-  .delete(walletController.DeleteResource);
+  .delete(MessageService(405, 'Cannot delete a wallet'));
 
-export default router;
+export default walletRouter;
