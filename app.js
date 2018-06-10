@@ -8,6 +8,7 @@ import seedDB from './lib/utils/seedDB';
 import peopleRoute from './routes/peopleRouter';
 import walletRoute from './routes/walletRouter';
 import jobRoute from './routes/jobRouter';
+import workRoute from './routes/workRouter';
 
 
 dotenv.config();
@@ -28,6 +29,7 @@ app.use(morgan('combined'));
 app.use('/people', peopleRoute);
 app.use('/people/:id/wallet', walletRoute);
 app.use('/people/:id/job', jobRoute);
+app.use('/people/:id/work', workRoute);
 
 
 app.listen(port, () => {

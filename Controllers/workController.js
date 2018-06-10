@@ -1,15 +1,16 @@
 import jobControllerDebug from 'debug';
-import Job from '../models/job';
+import Work from '../models/work';
 import hlGenerator from '../lib/utils/HyperMediaLinksGenerator';
 
-const debug = jobControllerDebug('app:jobController');
+const debug = jobControllerDebug('app:workController');
 
-const jobController = {
+const workController = {
   FindResource: async (req, res) => {
     try {
-      const foundJob = await Job.find({ _Owner: req.params.id });
-      hlGenerator(foundJob, req.headers.host, req.originalUrl, 'self');
-      res.json(foundJob);
+      debug(req.params.id);
+      const foundWork = await Work.find({ _Owner: req.params.id });
+      hlGenerator(foundWork, req.headers.host, req.originalUrl, 'self');
+      res.json(foundWork);
     } catch (error) {
       debug(error);
       res.status(204).send("Error Happened, couldn't find resource.");
@@ -18,8 +19,9 @@ const jobController = {
 
   FindResourceById: async (req, res) => {
     try {
-      const foundJob = await Job.findById(req.params.jobid);
-      res.json(foundJob);
+      debug(req.params.workId);
+      const foundWork = await Work.findById(req.params.workId);
+      res.json(foundWork);
     } catch (error) {
       res.status(204).send('No such resource exists');
     }
@@ -27,8 +29,8 @@ const jobController = {
 
   UpdateResource: async (req, res) => {
     try {
-      const updatedJob = await Job.findByIdAndUpdate(req.params.walletId, req.body);
-      res.json(updatedJob);
+      const updatedWork = await Work.findByIdAndUpdate(req.params.walletId, req.body);
+      res.json(updatedWork);
     } catch (error) {
       debug(error);
       res.sendStatus(500).send('Error processing the request');
@@ -36,5 +38,5 @@ const jobController = {
   },
 };
 
-export default jobController;
+export default workController;
 

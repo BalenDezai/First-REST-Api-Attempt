@@ -8,9 +8,9 @@ const peopleController = {
   FindResource: async (req, res) => {
     try {
       const foundPeople = await Person.find(req.query);
-      const endpoins = ['self', 'wallet', 'job'];
+      const endpoins = ['self', 'wallet', 'job', 'work'];
+      debug(req.originalUrl);
       hlGenerator(foundPeople, req.headers.host, req.originalUrl, endpoins);
-
       if (foundPeople.length > 0) {
         res.json(foundPeople);
       } else {

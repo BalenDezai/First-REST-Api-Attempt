@@ -18,7 +18,7 @@ const walletController = {
 
   FindResourceById: async (req, res) => {
     try {
-      const foundWallet = await Wallet.findById(req.params.id);
+      const foundWallet = await Wallet.findById(req.params.walletId);
       res.json(foundWallet);
     } catch (error) {
       res.status(204).send('No such resource exists');
