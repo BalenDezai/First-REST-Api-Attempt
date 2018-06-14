@@ -1,6 +1,6 @@
 import express from 'express';
-import workController from '../Controllers/workController';
-import MessageService from '../lib/utils/MessageService';
+import workController from './workController';
+import MessageService from '../../util/MessageService';
 
 const workRouter = express.Router({ mergeParams: true });
 

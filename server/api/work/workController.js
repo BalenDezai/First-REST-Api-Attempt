@@ -1,6 +1,6 @@
 import jobControllerDebug from 'debug';
-import Work from '../models/work';
-import hlGenerator from '../lib/utils/HyperMediaLinksGenerator';
+import Work from './workModel';
+import hlGenerator from '../../util/HyperMediaLinksGenerator';
 
 const debug = jobControllerDebug('app:workController');
 

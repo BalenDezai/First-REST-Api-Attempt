@@ -1,6 +1,6 @@
 import express from 'express';
-import walletController from '../Controllers/walletController';
-import MessageService from '../lib/utils/MessageService';
+import walletController from './walletController';
+import MessageService from '../../util/MessageService';
 
 const walletRouter = express.Router({ mergeParams: true });
 
