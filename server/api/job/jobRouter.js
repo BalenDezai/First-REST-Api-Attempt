@@ -1,6 +1,6 @@
 import express from 'express';
-import jobController from '../Controllers/jobController';
-import MessageService from '../lib/utils/MessageService';
+import jobController from './jobController';
+import MessageService from '../../util/MessageService';
 
 const jobRouter = express.Router({ mergeParams: true });
 

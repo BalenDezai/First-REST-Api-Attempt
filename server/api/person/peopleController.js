@@ -1,6 +1,6 @@
 import bookControllerDebug from 'debug';
-import Person from '../models/person';
-import hlGenerator from '../lib/utils/HyperMediaLinksGenerator';
+import Person from './personModel';
+import hlGenerator from '../../util/HyperMediaLinksGenerator';
 
 const debug = bookControllerDebug('app:peopleController');
 

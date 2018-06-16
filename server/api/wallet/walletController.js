@@ -1,6 +1,6 @@
 import walletControllerDebug from 'debug';
-import Wallet from '../models/wallet';
-import hlGenerator from '../lib/utils/HyperMediaLinksGenerator';
+import Wallet from './walletModel';
+import hlGenerator from '../../util/HyperMediaLinksGenerator';
 
 const debug = walletControllerDebug('app:walletController');
 

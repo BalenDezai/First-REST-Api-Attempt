@@ -1,6 +1,6 @@
 import express from 'express';
-import peopleController from '../Controllers/peopleController';
-import MessageService from '../lib/utils/MessageService';
+import peopleController from './peopleController';
+import MessageService from '../../util/MessageService';
 
 const peopleRouter = express.Router();
 

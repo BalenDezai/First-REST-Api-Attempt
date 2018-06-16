@@ -1,11 +1,11 @@
 import faker from 'faker';
 import seeddebug from 'debug';
-import Person from '../../models/person';
-import Job from '../../models/job';
-import Wallet from '../../models/wallet';
-import Work from '../../models/work';
+import Person from '../api/person/personModel';
+import Job from '../api/job/jobModel';
+import Wallet from '../api/wallet/walletModel';
+import Work from '../api/work/workModel';
 
-const debug = seeddebug('seed');
+const debug = seeddebug('server:seedDatabase');
 
 const jobs = [];
 const wallets = [];

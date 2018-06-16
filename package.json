@@ -5,8 +5,8 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon --exec babel-node -- ./app.js",
-    "dev": "set DEBUG=app,app:*,seed & nodemon --exec babel-node -- ./app.js ",
+    "start": "babel-node index.js",
+    "dev": "set DEBUG=Server,Server:*,Index & nodemon --exec babel-node -- ./index.js ",
     "lint": "node_modules/.bin/eslint app.js"
   },
   "author": "",
