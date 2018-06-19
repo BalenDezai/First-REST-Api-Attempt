@@ -7,13 +7,7 @@ const workRouter = express.Router({ mergeParams: true });
 workRouter.route('/')
   .get(workController.FindResource)
   .post(MessageService(405, 'Cannot create a new work'))
-  .put(MessageService(405, 'Use /work/ID to update specific resource'))
-  .delete(MessageService(405, 'Cannot delete a work'));
-
-workRouter.route('/:workId')
-  .get(workController.FindResourceById)
-  .post(MessageService(405, 'Cannot create a work'))
-  .put(workController.UpdateResource)
+  .patch(workController.UpdateResource)
   .delete(MessageService(405, 'Cannot delete a work'));
 
 export default workRouter;

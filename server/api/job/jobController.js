@@ -1,6 +1,6 @@
 import jobControllerDebug from 'debug';
 import Job from './jobModel';
-import hlGenerator from '../../util/HyperMediaLinksGenerator';
+import sendError from '../../util/sendError';
 
 const debug = jobControllerDebug('app:jobController');
 
@@ -8,30 +8,20 @@ const jobController = {
   FindResource: async (req, res) => {
     try {
       const foundJob = await Job.find({ _Owner: req.params.id });
-      hlGenerator(foundJob, req.headers.host, req.originalUrl, 'self');
-      res.json(foundJob);
+      res.status(200).json(foundJob);
     } catch (error) {
       debug(error);
-      res.status(204).send("Error Happened, couldn't find resource.");
-    }
-  },
-
-  FindResourceById: async (req, res) => {
-    try {
-      const foundJob = await Job.findById(req.params.jobid);
-      res.json(foundJob);
-    } catch (error) {
-      res.status(204).send('No such resource exists');
+      sendError(500, 'Error processing the request', error);
     }
   },
 
   UpdateResource: async (req, res) => {
     try {
-      const updatedJob = await Job.findByIdAndUpdate(req.params.walletId, req.body);
-      res.json(updatedJob);
+      const updatedJob = await Job.findOneAndUpdate({ _Owner: req.params.id }, req.body, { new: true });
+      res.status(200).json(updatedJob);
     } catch (error) {
       debug(error);
-      res.sendStatus(500).send('Error processing the request');
+      sendError(500, 'Error processing the request', error);
     }
   },
 };

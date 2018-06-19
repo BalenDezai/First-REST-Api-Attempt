@@ -1,6 +1,6 @@
 import walletControllerDebug from 'debug';
 import Wallet from './walletModel';
-import hlGenerator from '../../util/HyperMediaLinksGenerator';
+import sendError from '../../util/sendError';
 
 const debug = walletControllerDebug('app:walletController');
 
@@ -8,30 +8,21 @@ const walletController = {
   FindResource: async (req, res) => {
     try {
       const foundWallet = await Wallet.find({ _Owner: req.params.id });
-      hlGenerator(foundWallet, req.headers.host, req.originalUrl, 'self');
       res.json(foundWallet);
     } catch (error) {
       debug(error);
-      res.status(204).send("Error Happened, couldn't find resource.");
+      sendError(500, 'Error processing the request', error);
     }
   },
 
-  FindResourceById: async (req, res) => {
-    try {
-      const foundWallet = await Wallet.findById(req.params.walletId);
-      res.json(foundWallet);
-    } catch (error) {
-      res.status(204).send('No such resource exists');
-    }
-  },
 
   UpdateResource: async (req, res) => {
     try {
-      const updatedWallet = await Wallet.findByIdAndUpdate(req.params.walletId, req.body);
+      const updatedWallet = await Wallet.findOneAndUpdate({ _Owner: req.params.id }, req.body, { new: true });
       res.json(updatedWallet);
     } catch (error) {
       debug(error);
-      res.sendStatus(500).send('Error processing the request');
+      sendError(500, 'Error processing the request', error);
     }
   },
 };

@@ -1,6 +1,9 @@
 function MessageService(statusCode, message) {
   return (req, res) => {
-    res.status(statusCode).send(message);
+    res.status(statusCode).json({
+      status: statusCode,
+      message,
+    });
   };
 }
 
