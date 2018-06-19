@@ -2,11 +2,11 @@
   "name": "restfulapi",
   "version": "1.0.0",
   "description": "",
-  "main": "app.js",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "babel-node index.js",
-    "dev": "set DEBUG=Server,Server:*,Index & nodemon --exec babel-node -- ./index.js ",
+    "dev": "set DEBUG=app,app:*,Index & nodemon --exec babel-node -- ./server.js ",
     "lint": "node_modules/.bin/eslint app.js"
   },
   "author": "",

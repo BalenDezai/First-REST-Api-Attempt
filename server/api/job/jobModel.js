@@ -1,11 +1,16 @@
 import mongoose from 'mongoose';
 
-const jobTitleSchema = new mongoose.Schema({
-  JobTitle: String,
-  Description: String,
-  Permissions: String,
+const jobSchema = new mongoose.Schema({
+  _id: mongoose.Schema.Types.ObjectId,
+  jobTitle: String,
+  description: String,
   _Owner: String,
-  Links: [],
+  permissions: [],
+  links: [{
+    _id: false,
+    rel: String,
+    href: String,
+  }],
 });
 
-export default mongoose.model('Job', jobTitleSchema);
+export default mongoose.model('Job', jobSchema);

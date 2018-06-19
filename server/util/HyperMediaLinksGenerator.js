@@ -5,17 +5,16 @@ function generateLinks(element, hostname, url, selfId, endPoints) {
         rel: endPoints[i],
         href: `http://${hostname}${url}/${selfId}/${endPoints[i]}`,
       };
-      element.Links.push(linkBody);
+      element.links.push(linkBody);
     } else {
       const linkBody = {
         rel: endPoints[i],
         href: `http://${hostname}${url}/${selfId}`,
       };
-      element.Links.push(linkBody);
+      element.links.push(linkBody);
     }
   }
 }
-
 
 function UrlCleaner(url) {
   if (url.endsWith('/')) {
@@ -25,24 +24,24 @@ function UrlCleaner(url) {
   return url;
 }
 
-
 function hateaosGenerator(documents, hostName, url, endPoints) {
-
   const newUrl = UrlCleaner(url);
-
-  if (typeof endPoints === 'object') {
+  if (Array.isArray(endPoints) && Array.isArray(documents)) {
     documents.forEach((element) => {
-      generateLinks(element, hostName, newUrl, element._id, endPoints);
+      generateLinks(element, hostName, newUrl, element.id, endPoints);
     });
+  } else if (Array.isArray(endPoints) && !Array.isArray(documents)) {
+    generateLinks(documents, hostName, newUrl, documents._id, endPoints);
   } else if (typeof endPoints === 'string') {
     documents.forEach((element) => {
       const linkBody = {
         rel: endPoints,
-        href: `http://${hostName}${newUrl}/${element._id}`,
+        href: `http://${hostName}${newUrl}/${element.id}`,
       };
-      element.Links.push(linkBody);
+      element.links.push(linkBody);
     });
   }
 }
+
 
 export default hateaosGenerator;
