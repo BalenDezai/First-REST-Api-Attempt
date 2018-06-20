@@ -41,4 +41,4 @@ const config = {
   prod,
 };
 
-export default config[env];
+module.exports = config[env];

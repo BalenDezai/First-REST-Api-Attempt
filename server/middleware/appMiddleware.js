@@ -1,10 +1,10 @@
-import morgan from 'morgan';
-import bodyParser from 'body-parser';
-import corsMiddleware from './corsMiddleware';
+const morgan = require('morgan');
+const bodyParser = require('body-parser');
+const corsMiddleware = require('./corsMiddleware');
 
-export default function (app) {
+module.exports = function middlewareSetup(app) {
   app.use(corsMiddleware());
   app.use(bodyParser.urlencoded({ extended: false }));
   app.use(bodyParser.json());
   app.use(morgan('combined'));
-}
+};

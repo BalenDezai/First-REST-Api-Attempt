@@ -44,4 +44,4 @@ function hateaosGenerator(documents, hostName, url, endPoints) {
 }
 
 
-export default hateaosGenerator;
+module.exports = hateaosGenerator;

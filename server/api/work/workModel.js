@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
 const workSchema = new mongoose.Schema({
   _id: mongoose.Schema.Types.ObjectId,
@@ -14,4 +14,4 @@ const workSchema = new mongoose.Schema({
   }],
 });
 
-export default mongoose.model('Work', workSchema);
+module.exports = mongoose.model('Work', workSchema);

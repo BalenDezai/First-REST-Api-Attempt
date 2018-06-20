@@ -1,15 +1,12 @@
-import faker from 'faker';
-import seeddebug from 'debug';
-import mongoose from 'mongoose';
-import Employee from '../api/employee/employeeModel';
-import Job from '../api/job/jobModel';
-import Wallet from '../api/wallet/walletModel';
-import Work from '../api/work/workModel';
-import Schedule from '../api/schedule/scheduleModel';
-import hateaosGen from './HyperMediaLinksGenerator';
-
-
-const debug = seeddebug('app:seedDatabase');
+const faker = require('faker');
+const debug  = require('debug')('app:seedDatabase');;
+const mongoose = require('mongoose');
+const Employee = require('../api/employee/employeeModel');
+const Job = require('../api/job/jobModel');
+const Wallet = require('../api/wallet/walletModel');
+const Work = require('../api/work/workModel');
+const Schedule = require('../api/schedule/scheduleModel');
+const hateaosGen = require('./HyperMediaLinksGenerator');
 
 const employees = [];
 const jobs = [];
@@ -97,7 +94,7 @@ for (let index = 0; index < 20; index += 1) {
   works.push(work);
 }
 
-export default async function () {
+module.exports = async function SeedDB() {
   try {
     await Employee.remove();
     await Job.remove();

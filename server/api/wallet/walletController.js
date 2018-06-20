@@ -1,8 +1,6 @@
-import walletControllerDebug from 'debug';
-import Wallet from './walletModel';
-import sendError from '../../util/sendError';
-
-const debug = walletControllerDebug('app:walletController');
+const debug = require('debug')('app:walletController');
+const Wallet = require('./walletModel');
+const sendError = require('../../util/sendError');
 
 const walletController = {
   FindResource: async (req, res) => {
@@ -18,7 +16,8 @@ const walletController = {
 
   UpdateResource: async (req, res) => {
     try {
-      const updatedWallet = await Wallet.findOneAndUpdate({ _Owner: req.params.id }, req.body, { new: true });
+      const updatedWallet = await Wallet
+        .findOneAndUpdate({ _Owner: req.params.id }, req.body, { new: true });
       res.json(updatedWallet);
     } catch (error) {
       debug(error);
@@ -27,5 +26,5 @@ const walletController = {
   },
 };
 
-export default walletController;
+module.exports = walletController;
 

@@ -1,15 +1,13 @@
-import bookControllerDebug from 'debug';
-import mongoose from 'mongoose';
-import Employee from './employeeModel';
-import Job from '../job/jobModel';
-import Schedule from '../schedule/scheduleModel';
-import Wallet from '../wallet/walletModel';
-import Work from '../work/workModel';
-import hlGenerator from '../../util/HyperMediaLinksGenerator';
-import sendError from '../../util/sendError';
-import emptyModelTemplateGenerator from '../../util/emptyModelTemplates';
-
-const debug = bookControllerDebug('app:peopleController');
+const debug = require('debug')('app:peopleController');
+const mongoose = require('mongoose');
+const Employee = require('./employeeModel');
+const Job = require('../job/jobModel');
+const Schedule = require('../schedule/scheduleModel');
+const Wallet = require('../wallet/walletModel');
+const Work = require('../work/workModel');
+const hlGenerator = require('../../util/HyperMediaLinksGenerator');
+const sendError = require('../../util/sendError');
+const emptyModelTemplateGenerator = require('../../util/emptyModelTemplates');
 
 const peopleController = {
   FindResource: async (req, res) => {
@@ -85,5 +83,5 @@ const peopleController = {
   },
 };
 
-export default peopleController;
+module.exports = peopleController;
 

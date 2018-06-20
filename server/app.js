@@ -1,10 +1,10 @@
-import express from 'express';
-import api from './api/api';
-import middlewareSetup from './middleware/appMiddleware';
-import startDB from './db';
-import seedDb from './util/seedDB';
-import sendError from './util/sendError';
-import errorHandler from './util/errorHandler';
+const express = require('express');
+const api = require('./api/api');
+const middlewareSetup = require('./middleware/appMiddleware');
+const startDB = require('./db');
+const seedDb = require('./util/seedDB');
+const sendError = require('./util/sendError');
+const errorHandler = require('./util/errorHandler');
 
 const app = express();
 
@@ -22,5 +22,5 @@ app.use(sendError(404, 'Resource not found'));
 app.use(errorHandler());
 
 
-export default app;
+module.exports = app;
 

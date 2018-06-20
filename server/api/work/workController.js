@@ -1,8 +1,6 @@
-import workControllerDebug from 'debug';
-import Work from './workModel';
-import sendError from '../../util/sendError';
-
-const debug = workControllerDebug('app:workController');
+const debug = require('debug')('app:workController');
+const Work = require('./workModel');
+const sendError = require('../../util/sendError');
 
 const workController = {
   FindResource: async (req, res) => {
@@ -27,5 +25,5 @@ const workController = {
   },
 };
 
-export default workController;
+module.exports = workController;
 

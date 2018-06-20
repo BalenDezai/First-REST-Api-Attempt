@@ -1,8 +1,6 @@
-import express from 'express';
-import peopleController from './employeeController';
-import MessageService from '../../util/MessageService';
-
-const peopleRouter = express.Router();
+const peopleRouter = require('express').Router();
+const peopleController = require('./employeeController');
+const MessageService = require('../../util/MessageService');
 
 peopleRouter.route('/')
   .get(peopleController.FindResource)
@@ -16,5 +14,4 @@ peopleRouter.route('/:id')
   .patch(peopleController.UpdateResource)
   .delete(peopleController.DeleteResource);
 
-
-export default peopleRouter;
+module.exports = peopleRouter;

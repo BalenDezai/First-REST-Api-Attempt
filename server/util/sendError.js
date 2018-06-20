@@ -9,4 +9,4 @@ function sendError(statusCode, message, catchError) {
   };
 }
 
-export default sendError;
+module.exports = sendError;

@@ -9,4 +9,4 @@ function handleError() {
   };
 }
 
-export default handleError;
+module.exports = handleError;
