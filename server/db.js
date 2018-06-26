@@ -1,8 +1,13 @@
 const mongoose = require('mongoose');
 const config = require('./config/config');
+const logger = require('./util/loggerWrapper');
 
 const connectionString = `mongodb://${config.db.host}:${config.db.port}/${config.db.name}`;
 
 module.exports = function StartDb() {
-  mongoose.connect(connectionString);
+  try {
+    mongoose.connect(connectionString);
+  } catch (error) {
+    logger.log(error, 'error');
+  }
 };

@@ -1,26 +1,29 @@
-const debug = require('debug')('app:workController');
 const Work = require('./workModel');
-const sendError = require('../../util/sendError');
 
 const workController = {
-  FindResource: async (req, res) => {
+  FindResource: async (req, res, next) => {
     try {
-      debug(req.params.id);
       const foundWork = await Work.find({ _Owner: req.params.id });
       res.json(foundWork);
     } catch (error) {
-      debug(error);
-      sendError(500, 'Error processing the request', error);
+      const err = new Error(error);
+      err.status = 500;
+      err.resMessage = 'Error processing the request';
+      err.catchError = error;
+      next(err);
     }
   },
 
-  UpdateResource: async (req, res) => {
+  UpdateResource: async (req, res, next) => {
     try {
       const updatedWork = await Work.findOneAndUpdate({ _Owner: req.params.id }, req.body, { new: true });
       res.json(updatedWork);
     } catch (error) {
-      debug(error);
-      sendError(500, 'Error processing the request', error);
+      const err = new Error(error);
+      err.status = 500;
+      err.resMessage = 'Error processing the request';
+      err.catchError = error;
+      next(err);
     }
   },
 };

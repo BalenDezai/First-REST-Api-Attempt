@@ -3,7 +3,6 @@ const api = require('./api/api');
 const middlewareSetup = require('./middleware/appMiddleware');
 const startDB = require('./db');
 const seedDb = require('./util/seedDB');
-const sendError = require('./util/sendError');
 const errorHandler = require('./util/errorHandler');
 
 const app = express();
@@ -16,7 +15,11 @@ middlewareSetup(app);
 
 app.use('/api/v1', api);
 
-app.use(sendError(404, 'Resource not found'));
+app.use((req, res, next) => {
+  const error = new Error('Resource not found');
+  error.status = 404;
+  next(error);
+});
 
 
 app.use(errorHandler());

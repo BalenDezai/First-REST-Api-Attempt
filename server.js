@@ -1,8 +1,8 @@
 const dotenv = require('dotenv').config();
-const debug = require('debug')('Index');
 const config = require('./server/config/config');
 const app = require('./server/app');
+const logger = require('./server/util/loggerWrapper');
 
 app.listen(config.app.port);
-debug(`server started on port ${config.app.port}`);
+logger.log(`server started on port ${config.app.port}`, 'info', true);
 

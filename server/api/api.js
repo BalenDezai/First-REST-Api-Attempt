@@ -5,10 +5,10 @@ const scheduleRoute = require('./schedule/scheduleRoutes');
 const jobRoute = require('./job/jobRouter');
 const workRoute = require('./work/workRouter');
 
-router.use('/employee', employeeRoute);
-router.use('/employee:id/schedule', scheduleRoute);
-router.use('/employee/:id/wallet', walletRoute);
-router.use('/employee/:id/job', jobRoute);
-router.use('/employee/:id/work', workRoute);
+router.use('/employees', employeeRoute);
+router.use('/employees/:id/schedule', scheduleRoute);
+router.use('/employees/:id/wallet', walletRoute);
+router.use('/employees/:id/job', jobRoute);
+router.use('/employees/:id/work', workRoute);
 
 module.exports = router;

@@ -1,4 +1,3 @@
-const debug = require('debug')('app:peopleController');
 const mongoose = require('mongoose');
 const Employee = require('./employeeModel');
 const Job = require('../job/jobModel');
@@ -6,82 +5,103 @@ const Schedule = require('../schedule/scheduleModel');
 const Wallet = require('../wallet/walletModel');
 const Work = require('../work/workModel');
 const hlGenerator = require('../../util/HyperMediaLinksGenerator');
-const sendError = require('../../util/sendError');
-const emptyModelTemplateGenerator = require('../../util/emptyModelTemplates');
 
-const peopleController = {
-  FindResource: async (req, res) => {
+const employeeController = {
+  FindResource: async (req, res, next) => {
     try {
-      const foundPeople = await Employee.find(req.query);
-      if (foundPeople.length > 0) {
-        res.status(200).json(foundPeople);
+      const foundEmployee = await Employee.find(req.query);
+      hlGenerator(foundEmployee, req.headers.host, req.originalUrl, ['self', 'Wallet', 'Job', 'Schedules', 'Work']);
+      const documents = {
+        count: foundEmployee.length,
+        employees: foundEmployee,
+      };
+      if (foundEmployee.length > 0) {
+        res.status(200).json(documents);
       } else {
-        res.status(204).json({});
+        res.status(204).json(documents);
       }
     } catch (error) {
-      debug(error);
-      sendError(500, 'Error processing the request', error);
+      const err = new Error(error);
+      err.status = 500;
+      err.resMessage = 'Error processing the request';
+      err.catchError = error;
+      next(err);
     }
   },
 
-  FindResourceById: async (req, res) => {
+  FindResourceById: async (req, res, next) => {
     try {
-      const foundPerson = await Employee.findById(req.params.id);
-      res.json(foundPerson);
+      const foundEmployee = await Employee.find({ _id: req.params.id });
+      hlGenerator(foundEmployee, req.header.host, req.originalUrl, ['self', 'Wallet', 'Job', 'Schedules', 'Work']);
+      res.status(200).json(foundEmployee);
     } catch (error) {
-      debug(error);
-      sendError(500, 'Error processing the request', error);
+      error.status = 500;
+      error.resMessage = 'Error processing the request';
+      next(error);
     }
   },
 
-  CreateResource: async (req, res) => {
+  CreateResource: async (req, res, next) => {
     try {
       const newEmployee = {
-        _id: mongoose.Types.ObjectId(),
+        _id: req.body._id || new mongoose.Types.ObjectId(),
         firstName: req.body.firstName,
         lastName: req.body.lastName,
         birthday: req.body.birthday,
+        city: req.body.city,
+        country: req.body.country,
+        street: req.body.country,
         address: req.body.address,
         phoneNumber: req.body.phoneNumber,
         startDate: req.body.startDate,
         lastChanged: req.body.lastChanged,
-        links: [],
-      }
-      const endpoints = ['self', 'wallet', 'workhours', 'job', 'schedule'];
-      hlGenerator(newEmployee, req.headers.host, req.originalUrl, endpoints);
+      };
       const createdEmployee = await Employee.create(newEmployee);
-      const emptyModelTemplates = emptyModelTemplateGenerator(createdEmployee._id, mongoose, req.headers.host, req.originalUrl);
-      await Job.create(emptyModelTemplates.jobTemplate);
-      await Wallet.create(emptyModelTemplates.walletTemplate);
-      await Schedule.create(emptyModelTemplates.scheduleTemplate);
-      await Work.create(emptyModelTemplates.workhoursTemplate);
+      const endpoints = ['self', 'Wallet', 'Job', 'Schedules', 'Work'];
+      hlGenerator(createdEmployee, req.headers.host, req.originalUrl, endpoints);
+      await Job.create({
+        _id: new mongoose.Types.ObjectId(),
+        _Owner: createdEmployee._id,
+      });
+      await Wallet.create({
+        _id: new mongoose.Types.ObjectId(),
+        _Owner: createdEmployee._id,
+      });
+      await Work.create({
+        _id: new mongoose.Types.ObjectId(),
+        _Owner: createdEmployee._id,
+      });
       res.status(201).json(createdEmployee);
     } catch (error) {
-      debug(error);
-      sendError(500, 'Error processing the request', error);
+      error.status = 500;
+      error.resMessage = 'Error processing the request';
+      next(error);
     }
   },
 
-  UpdateResource: async (req, res) => {
+  UpdateResource: async (req, res, next) => {
     try {
-      const updatedEmployee = await Employee.findByIdAndUpdate(req.params.id, req.body, { new: true });
+      const updatedEmployee = await Employee
+        .findByIdAndUpdate(req.params.id, { $set: req.body }, { new: true });
       res.status(200).json(updatedEmployee);
     } catch (error) {
-      debug(error);
-      sendError(500, 'Error processing the request', error);
+      error.status = 500;
+      error.resMessage = 'Error processing the request';
+      next(error);
     }
   },
 
-  DeleteResource: async (req, res) => {
+  DeleteResource: async (req, res, next) => {
     try {
       await Employee.remove({ _id: req.params.id });
       res.status(200).json({ status: 200, message: 'Successfully deleted employee' });
     } catch (error) {
-      debug(error);
-      sendError(500, 'Error processing the request', error);
+      error.status = 500;
+      error.resMessage = 'Error processing the request';
+      next(error);
     }
   },
 };
 
-module.exports = peopleController;
+module.exports = employeeController;
 
