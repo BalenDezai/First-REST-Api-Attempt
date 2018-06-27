@@ -1,19 +1,17 @@
-const express = require('express');
+const scheduleRouter = require('express').Router({ mergeParams: true });
 const scheduleController = require('./scheduleController');
 const MessageService = require('../../util/MessageService');
 
-const scheduleRouter = express.Router({ mergeParams: true });
-
 scheduleRouter.route('/')
   .get(scheduleController.FindResource)
-  .post(MessageService(405, 'Cannot create a new schedule'))
-  .patch(MessageService(405, 'Use schedule/id to update a specfic schedule'))
-  .delete(MessageService(405, 'Cannot delete a schedule'));
+  .post(scheduleController.CreateResource)
+  .patch(MessageService(405, 'Use /schedules/id to update a specfic schedule'))
+  .delete(MessageService(405, 'Use /schedules/id to delete a specfic schedule'));
 
-scheduleRouter.route('/scheduleId')
-  .get(scheduleController.FindResource)
-  .post(MessageService(405, 'Cannot create a new schedule'))
+scheduleRouter.route('/:scheduleId')
+  .get(scheduleController.findResourceById)
+  .post(MessageService(405, 'Use /schedules/ to create a schedule'))
   .patch(scheduleController.UpdateResource)
-  .delete(MessageService(405, 'Cannot delete a schedule'));
+  .delete(scheduleController.DeleteResource);
 
 module.exports = scheduleRouter;

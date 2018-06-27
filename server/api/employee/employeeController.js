@@ -9,29 +9,59 @@ const hlGenerator = require('../../util/HyperMediaLinksGenerator');
 const employeeController = {
   FindResource: async (req, res, next) => {
     try {
-      const foundEmployee = await Employee.find(req.query);
-      hlGenerator(foundEmployee, req.headers.host, req.originalUrl, ['self', 'Wallet', 'Job', 'Schedules', 'Work']);
+      const foundEmployees = await Employee.find(req.query);
+      const hateaosEndpoints = [
+        {
+          rel: 'self',
+          type: 'GET',
+          description: 'view this employee',
+        },
+        {
+          rel: 'self',
+          type: 'POST',
+          description: 'create a new employee',
+        },
+        {
+          rel: 'job',
+          type: 'GET',
+          description: 'get employees job',
+        },
+        {
+          rel: 'wallet',
+          type: 'GET',
+          description: 'get employees wallet',
+        },
+        {
+          rel: 'schedules',
+          type: 'GET',
+          description: 'get employees schedules',
+        },
+        {
+          rel: 'work',
+          type: 'GET',
+          description: 'get employees work',
+        },
+      ];
+      hlGenerator(foundEmployees, req.headers.host, req.originalUrl, hateaosEndpoints);
       const documents = {
-        count: foundEmployee.length,
-        employees: foundEmployee,
+        count: foundEmployees.length,
+        employees: foundEmployees,
       };
-      if (foundEmployee.length > 0) {
+      if (documents.count > 0) {
         res.status(200).json(documents);
       } else {
         res.status(204).json(documents);
       }
     } catch (error) {
-      const err = new Error(error);
-      err.status = 500;
-      err.resMessage = 'Error processing the request';
-      err.catchError = error;
-      next(err);
+      error.status = 500;
+      error.resMessage = 'Error processing the request';
+      next(error);
     }
   },
 
   FindResourceById: async (req, res, next) => {
     try {
-      const foundEmployee = await Employee.find({ _id: req.params.id });
+      const foundEmployee = await Employee.findOne({ _id: req.params.id });
       hlGenerator(foundEmployee, req.header.host, req.originalUrl, ['self', 'Wallet', 'Job', 'Schedules', 'Work']);
       res.status(200).json(foundEmployee);
     } catch (error) {
@@ -44,7 +74,7 @@ const employeeController = {
   CreateResource: async (req, res, next) => {
     try {
       const newEmployee = {
-        _id: req.body._id || new mongoose.Types.ObjectId(),
+        _id: new mongoose.Types.ObjectId(),
         firstName: req.body.firstName,
         lastName: req.body.lastName,
         birthday: req.body.birthday,
@@ -82,7 +112,7 @@ const employeeController = {
   UpdateResource: async (req, res, next) => {
     try {
       const updatedEmployee = await Employee
-        .findByIdAndUpdate(req.params.id, { $set: req.body }, { new: true });
+        .findOneAndUpdate({ _id: req.params.id }, { $set: req.body }, { new: true });
       res.status(200).json(updatedEmployee);
     } catch (error) {
       error.status = 500;
@@ -93,7 +123,7 @@ const employeeController = {
 
   DeleteResource: async (req, res, next) => {
     try {
-      await Employee.remove({ _id: req.params.id });
+      await Employee.findOneAndRemove({ _id: req.params.id });
       res.status(200).json({ status: 200, message: 'Successfully deleted employee' });
     } catch (error) {
       error.status = 500;

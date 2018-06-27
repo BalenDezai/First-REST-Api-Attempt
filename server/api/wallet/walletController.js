@@ -3,14 +3,13 @@ const Wallet = require('./walletModel');
 const walletController = {
   FindResource: async (req, res, next) => {
     try {
-      const foundWallet = await Wallet.find({ _Owner: req.params.id });
+      const foundWallet = await Wallet.findOne({ _Owner: req.params.id });
+      //  TODO: add hyper links to owner and other items
       res.json(foundWallet);
     } catch (error) {
-      const err = new Error(error);
-      err.status = 500;
-      err.resMessage = 'Error processing the request';
-      err.catchError = error;
-      next(err);
+      error.status = 500;
+      error.resMessage = 'Error processing the request';
+      next(error);
     }
   },
 
@@ -18,14 +17,13 @@ const walletController = {
   UpdateResource: async (req, res, next) => {
     try {
       const updatedWallet = await Wallet
-        .findOneAndUpdate({ _Owner: req.params.id }, req.body, { new: true });
+        .findOneAndUpdate({ _Owner: req.params.id }, { $set: req.body }, { new: true });
+      //  TODO: add hyper links to owner and other items
       res.json(updatedWallet);
     } catch (error) {
-      const err = new Error(error);
-      err.status = 500;
-      err.resMessage = 'Error processing the request';
-      err.catchError = error;
-      next(err);
+      error.status = 500;
+      error.resMessage = 'Error processing the request';
+      next(error);
     }
   },
 };

@@ -6,8 +6,8 @@ const scheduleSchema = new mongoose.Schema({
   work_date: { type: Date, required: true },
   start_work_hour: { type: Date, required: true },
   end_work_hour: { type: Date, required: true },
-  is_holiday: { type: Boolean, required: true },
-  is_weekend: { type: Boolean, required: true },
+  is_holiday: { type: Boolean, default: false },
+  is_weekend: { type: Boolean, default: false },
   links: {
     type: [{
       _id: false,

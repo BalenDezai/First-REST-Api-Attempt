@@ -14,7 +14,9 @@ const employeeSchema = new mongoose.Schema({
   links: [{
     _id: false,
     rel: String,
+    type: { type: String, enum: ['GET', 'POST', 'PATCH', 'DELETE'] },
     href: String,
+    description: String,
   }],
 });
 

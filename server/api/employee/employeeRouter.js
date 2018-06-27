@@ -1,17 +1,17 @@
-const peopleRouter = require('express').Router();
-const peopleController = require('./employeeController');
+const employeeRouter = require('express').Router();
+const employeeController = require('./employeeController');
 const MessageService = require('../../util/MessageService');
 
-peopleRouter.route('/')
-  .get(peopleController.FindResource)
-  .post(peopleController.CreateResource)
-  .patch(MessageService(405, 'Use /people/ID to update specific resource'))
-  .delete(MessageService(405, 'Use /people/ID to delete specific resource'));
+employeeRouter.route('/')
+  .get(employeeController.FindResource)
+  .post(employeeController.CreateResource)
+  .patch(MessageService(405, 'Use /employees/id to update specific resource'))
+  .delete(MessageService(405, 'Use /employees/id to delete specific resource'));
 
-peopleRouter.route('/:id')
-  .get(peopleController.FindResourceById)
-  .post(MessageService(405, 'Use /people/ only to create a new resource'))
-  .patch(peopleController.UpdateResource)
-  .delete(peopleController.DeleteResource);
+employeeRouter.route('/:id')
+  .get(employeeController.FindResourceById)
+  .post(MessageService(405, 'Use /employees/ to create a new resource'))
+  .patch(employeeController.UpdateResource)
+  .delete(employeeController.DeleteResource);
 
-module.exports = peopleRouter;
+module.exports = employeeRouter;

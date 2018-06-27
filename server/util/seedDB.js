@@ -31,10 +31,10 @@ for (let index = 0; index < 20; index += 1) {
   };
   const job = {
     _id: new mongoose.Types.ObjectId(),
-    JobTitle: faker.name.jobTitle(),
-    Description: faker.name.jobDescriptor(),
+    jobTitle: faker.name.jobTitle(),
+    description: faker.name.jobDescriptor(),
     _Owner: employee._id,
-    Permissions: faker.random.arrayElement(['Create', 'Read', 'Update', 'Delete']),
+    permissions: faker.random.arrayElement(['Create', 'Read', 'Update', 'Delete']),
     links: [],
   };
 
