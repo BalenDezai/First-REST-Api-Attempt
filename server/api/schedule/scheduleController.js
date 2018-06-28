@@ -1,13 +1,13 @@
 const mongoose = require('mongoose');
 const Schedule = require('./scheduleModel');
-const hlGenerator = require('../../util/HyperMediaLinksGenerator');
 
 const scheduleController = {
   FindResource: async (req, res, next) => {
     try {
       const foundSchedule = await Schedule.find({ _Owner: req.params.id });
-      //  TODO: add hyper links to owner and other items
-      hlGenerator(foundSchedule, req.headers.host, req.originalUrl, ['self']);
+      foundSchedule.forEach((schedule) => {
+        schedule.SetUpHyperLinks(req.headers.host, req.originalUrl);
+      });
       const documents = {
         count: foundSchedule.length,
         schedules: foundSchedule,
@@ -27,8 +27,7 @@ const scheduleController = {
   findResourceById: async (req, res, next) => {
     try {
       const foundSchedule = await Schedule.findOne({ _id: req.params.scheduleId });
-      //  TODO: add hyper links to owner and other items
-      hlGenerator(foundSchedule, req.headers.host, req.originalUrl, ['self']);
+      foundSchedule.SetUpHyperLinks(req.headers.host, req.originalUrl);
       res.status(200).json(foundSchedule);
     } catch (error) {
       error.status = 500;
@@ -49,8 +48,7 @@ const scheduleController = {
         is_weekend: req.body._is_weekend,
       };
       const createdSchedule = await Schedule.create(newSchedule);
-      //  TODO: add hyper links to owner and other items
-      hlGenerator(createdSchedule, req.headers.host, req.originalUrl, ['self']);
+      createdSchedule.SetUpHyperLinks(req.headers.host, req.originalUrl);
       res.status(201).json(createdSchedule);
     } catch (error) {
       error.status = 500;
@@ -63,8 +61,7 @@ const scheduleController = {
     try {
       const updatedSchedule = await Schedule
         .findOneAndUpdate({ _id: req.params.scheduleId }, { $set: req.body }, { new: true });
-      //  TODO: add hyper links to owner and other items
-      hlGenerator(updatedSchedule, req.headers.host, req.originalUrl, ['self']);
+      updatedSchedule.SetUpHyperLinks(req.headers.host, req.originalUrl);
       res.status(200).json(updatedSchedule);
     } catch (error) {
       error.status = 500;

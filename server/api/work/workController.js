@@ -4,7 +4,7 @@ const workController = {
   FindResource: async (req, res, next) => {
     try {
       const foundWork = await Work.findOne({ _Owner: req.params.id });
-      //  TODO: add hyper links to owner and other items
+      foundWork.SetUpHyperLinks(req.headers.host, req.originalUrl);
       res.json(foundWork);
     } catch (error) {
       error.status = 500;
@@ -17,7 +17,7 @@ const workController = {
     try {
       const updatedWork = await Work
         .findOneAndUpdate({ _Owner: req.params.id }, { $set: req.body }, { new: true });
-      //  TODO: add hyper links to owner and other items
+      updatedWork.SetUpHyperLinks(req.headers.host, req.originalUrl);
       res.json(updatedWork);
     } catch (error) {
       error.status = 500;

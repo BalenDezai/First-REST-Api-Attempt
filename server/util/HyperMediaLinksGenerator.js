@@ -1,26 +1,56 @@
-function generateLinks(element, hostname, url, endPoints) {
+function generateLinks(record, hostname, url, endPoints) {
   for (let i = 0; i < endPoints.length; i += 1) {
-    if (endPoints[i].rel !== 'self') {
-      const linkBody = {
+    if (endPoints[i].rel === 'owner') {
+      //  shave off everything after the last slash in the url
+      const newUrl = url.substring(0, url.lastIndexOf('/') + 1);
+      record.links.push({
         rel: endPoints[i].rel,
         type: endPoints[i].type,
-        href: `http://${hostname}${url}/${element._id}/${endPoints[i].rel}`,
+        href: `http://${hostname}${newUrl}`,
         description: endPoints[i].description,
-      };
-      element.links.push(linkBody);
+      });
+    } else if (endPoints[i].rel !== 'self') {
+      record.links.push({
+        rel: endPoints[i].rel,
+        type: endPoints[i].type,
+        href: `http://${hostname}${url}/${record._id}/${endPoints[i].rel}`,
+        description: endPoints[i].description,
+      });
     } else {
-      const linkBody = {
+      record.links.push({
         rel: endPoints[i].rel,
         type: endPoints[i].type,
-        href: `http://${hostname}${url}/${element._id}`,
+        href: `http://${hostname}${url}/${record._id}`,
         description: endPoints[i].description,
-      };
-      element.links.push(linkBody);
+      });
     }
   }
 }
 
-function UrlCleaner(url) {
+
+function generateChildLinks(record, hostname, url, endPoints) {
+  for (let i = 0; i < endPoints.length; i += 1) {
+    if (endPoints[i].rel === 'owner') {
+      //  shave off everything after the last slash in the url
+      const newUrl = url.substring(0, url.lastIndexOf('/') + 1);
+      record.links.push({
+        rel: endPoints[i].rel,
+        type: endPoints[i].type,
+        href: `http://${hostname}${newUrl}`,
+        description: endPoints[i].description,
+      });
+    } else {
+      record.links.push({
+        rel: endPoints[i].rel,
+        type: endPoints[i].type,
+        href: `http://${hostname}${url}`,
+        description: endPoints[i].description,
+      });
+    }
+  }
+}
+
+function removeTrailingSlashes(url) {
   if (url.endsWith('/')) {
     //  replace the double forward slash with one
     const urlEnd = url.replace(/\/\/+/g, '/');
@@ -30,17 +60,15 @@ function UrlCleaner(url) {
   return url;
 }
 
-function hateaosGenerator(documents, hostName, url, endPoints) {
-  const newUrl = UrlCleaner(url);
-
-  if (Array.isArray(documents)) {
-    documents.forEach((element) => {
-      generateLinks(element, hostName, newUrl, endPoints);
-    });
+function hateoasGenerator(record, hostName, url, endPoints, isChild) {
+  //  replace the double forward slash with one for link generator
+  const newUrl = removeTrailingSlashes(url);
+  if (isChild) {
+    generateChildLinks(record, hostName, url, endPoints);
   } else {
-    generateLinks(documents, hostName, url, endPoints);
+    generateLinks(record, hostName, newUrl, endPoints);
   }
 }
 
 
-module.exports = hateaosGenerator;
+module.exports = hateoasGenerator;

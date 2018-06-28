@@ -1,48 +1,16 @@
 const mongoose = require('mongoose');
 const Employee = require('./employeeModel');
 const Job = require('../job/jobModel');
-const Schedule = require('../schedule/scheduleModel');
 const Wallet = require('../wallet/walletModel');
 const Work = require('../work/workModel');
-const hlGenerator = require('../../util/HyperMediaLinksGenerator');
 
 const employeeController = {
   FindResource: async (req, res, next) => {
     try {
       const foundEmployees = await Employee.find(req.query);
-      const hateaosEndpoints = [
-        {
-          rel: 'self',
-          type: 'GET',
-          description: 'view this employee',
-        },
-        {
-          rel: 'self',
-          type: 'POST',
-          description: 'create a new employee',
-        },
-        {
-          rel: 'job',
-          type: 'GET',
-          description: 'get employees job',
-        },
-        {
-          rel: 'wallet',
-          type: 'GET',
-          description: 'get employees wallet',
-        },
-        {
-          rel: 'schedules',
-          type: 'GET',
-          description: 'get employees schedules',
-        },
-        {
-          rel: 'work',
-          type: 'GET',
-          description: 'get employees work',
-        },
-      ];
-      hlGenerator(foundEmployees, req.headers.host, req.originalUrl, hateaosEndpoints);
+      foundEmployees.forEach((employee) => {
+        employee.SetUpHyperLinks(req.headers.host, req.originalUrl);
+      });
       const documents = {
         count: foundEmployees.length,
         employees: foundEmployees,
@@ -62,7 +30,7 @@ const employeeController = {
   FindResourceById: async (req, res, next) => {
     try {
       const foundEmployee = await Employee.findOne({ _id: req.params.id });
-      hlGenerator(foundEmployee, req.header.host, req.originalUrl, ['self', 'Wallet', 'Job', 'Schedules', 'Work']);
+      foundEmployee.SetUpHyperLinks(req.headers.host, req.originalUrl);
       res.status(200).json(foundEmployee);
     } catch (error) {
       error.status = 500;
@@ -87,8 +55,7 @@ const employeeController = {
         lastChanged: req.body.lastChanged,
       };
       const createdEmployee = await Employee.create(newEmployee);
-      const endpoints = ['self', 'Wallet', 'Job', 'Schedules', 'Work'];
-      hlGenerator(createdEmployee, req.headers.host, req.originalUrl, endpoints);
+      createdEmployee.SetUpHyperLinks(req.headers.host, req.originalUrl);
       await Job.create({
         _id: new mongoose.Types.ObjectId(),
         _Owner: createdEmployee._id,
@@ -113,6 +80,7 @@ const employeeController = {
     try {
       const updatedEmployee = await Employee
         .findOneAndUpdate({ _id: req.params.id }, { $set: req.body }, { new: true });
+      updatedEmployee.SetUpHyperLinks(req.headers.host, req.originalUrl);
       res.status(200).json(updatedEmployee);
     } catch (error) {
       error.status = 500;
