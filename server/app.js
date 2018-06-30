@@ -10,7 +10,6 @@ const app = express();
 startDB();
 seedDb();
 
-
 middlewareSetup(app);
 
 app.use('/api/v1', api);

@@ -7,7 +7,7 @@ const Work = require('../work/workModel');
 const employeeController = {
   FindResource: async (req, res, next) => {
     try {
-      const foundEmployees = await Employee.find(req.query);
+      const foundEmployees = await Employee.find(req.query, 'firstName lastName phoneNumber links');
       foundEmployees.forEach((employee) => {
         employee.SetUpHyperLinks(req.headers.host, req.originalUrl);
       });
@@ -29,7 +29,7 @@ const employeeController = {
 
   FindResourceById: async (req, res, next) => {
     try {
-      const foundEmployee = await Employee.findOne({ _id: req.params.id });
+      const foundEmployee = await Employee.findOne({ _id: req.params.id }).select('-_v');
       foundEmployee.SetUpHyperLinks(req.headers.host, req.originalUrl);
       res.status(200).json(foundEmployee);
     } catch (error) {
