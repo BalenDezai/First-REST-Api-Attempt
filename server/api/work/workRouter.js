@@ -1,8 +1,6 @@
-import express from 'express';
-import workController from './workController';
-import MessageService from '../../util/MessageService';
-
-const workRouter = express.Router({ mergeParams: true });
+const workRouter = require('express').Router({ mergeParams: true });
+const workController = require('./workController');
+const MessageService = require('../../util/MessageService');
 
 workRouter.route('/')
   .get(workController.FindResource)
@@ -10,4 +8,4 @@ workRouter.route('/')
   .patch(workController.UpdateResource)
   .delete(MessageService(405, 'Cannot delete a work'));
 
-export default workRouter;
+module.exports = workRouter;

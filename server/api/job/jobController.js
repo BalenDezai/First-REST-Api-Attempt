@@ -1,30 +1,31 @@
-import jobControllerDebug from 'debug';
-import Job from './jobModel';
-import sendError from '../../util/sendError';
-
-const debug = jobControllerDebug('app:jobController');
+const Job = require('./jobModel');
 
 const jobController = {
-  FindResource: async (req, res) => {
+  FindResource: async (req, res, next) => {
     try {
-      const foundJob = await Job.find({ _Owner: req.params.id });
+      const foundJob = await Job.findOne({ _Owner: req.params.id });
+      foundJob.SetUpHyperLinks(req.headers.host, req.originalUrl);
       res.status(200).json(foundJob);
     } catch (error) {
-      debug(error);
-      sendError(500, 'Error processing the request', error);
+      error.status = 500;
+      error.resMessage = 'Error processing the request';
+      next(error);
     }
   },
 
-  UpdateResource: async (req, res) => {
+  UpdateResource: async (req, res, next) => {
     try {
-      const updatedJob = await Job.findOneAndUpdate({ _Owner: req.params.id }, req.body, { new: true });
+      const updatedJob = await Job
+        .findOneAndUpdate({ _Owner: req.params.id }, { $set: req.body }, { new: true });
+      updatedJob.SetUpHyperLinks(req.headers.host, req.originalUrl);
       res.status(200).json(updatedJob);
     } catch (error) {
-      debug(error);
-      sendError(500, 'Error processing the request', error);
+      error.status = 500;
+      error.resMessage = 'Error processing the request';
+      next(error);
     }
   },
 };
 
-export default jobController;
+module.exports = jobController;
 

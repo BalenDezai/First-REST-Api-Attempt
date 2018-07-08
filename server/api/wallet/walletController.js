@@ -1,31 +1,32 @@
-import walletControllerDebug from 'debug';
-import Wallet from './walletModel';
-import sendError from '../../util/sendError';
-
-const debug = walletControllerDebug('app:walletController');
+const Wallet = require('./walletModel');
 
 const walletController = {
-  FindResource: async (req, res) => {
+  FindResource: async (req, res, next) => {
     try {
-      const foundWallet = await Wallet.find({ _Owner: req.params.id });
+      const foundWallet = await Wallet.findOne({ _Owner: req.params.id });
+      foundWallet.SetUpHyperLinks(req.headers.host, req.originalUrl);
       res.json(foundWallet);
     } catch (error) {
-      debug(error);
-      sendError(500, 'Error processing the request', error);
+      error.status = 500;
+      error.resMessage = 'Error processing the request';
+      next(error);
     }
   },
 
 
-  UpdateResource: async (req, res) => {
+  UpdateResource: async (req, res, next) => {
     try {
-      const updatedWallet = await Wallet.findOneAndUpdate({ _Owner: req.params.id }, req.body, { new: true });
+      const updatedWallet = await Wallet
+        .findOneAndUpdate({ _Owner: req.params.id }, { $set: req.body }, { new: true });
+      updatedWallet.SetUpHyperLinks(req.headers.host, req.originalUrl);
       res.json(updatedWallet);
     } catch (error) {
-      debug(error);
-      sendError(500, 'Error processing the request', error);
+      error.status = 500;
+      error.resMessage = 'Error processing the request';
+      next(error);
     }
   },
 };
 
-export default walletController;
+module.exports = walletController;
 

@@ -7,4 +7,4 @@ function MessageService(statusCode, message) {
   };
 }
 
-export default MessageService;
+module.exports = MessageService;

@@ -1,12 +1,19 @@
+const logger = require('./loggerWrapper');
+
 function handleError() {
   return (error, req, res, next) => {
-    //  TODO: error handle better
-    res.status(error.status || 500);
-    res.json({
-      status: error.status,
-      message: error.message,
+    logger.log(error, 'error');
+    if (error.name === 'UnauthorizedError') {
+      return res.status(401).json({
+        status: 401,
+        message: error.message,
+      });
+    }
+    res.status(error.status || 500).json({
+      status: error.status || 500,
+      message: error.resMessage || 'Unexpected Error',
     });
   };
 }
 
-export default handleError;
+module.exports = handleError;

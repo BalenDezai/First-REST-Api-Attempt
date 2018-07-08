@@ -1,31 +1,31 @@
-import workControllerDebug from 'debug';
-import Work from './workModel';
-import sendError from '../../util/sendError';
-
-const debug = workControllerDebug('app:workController');
+const Work = require('./workModel');
 
 const workController = {
-  FindResource: async (req, res) => {
+  FindResource: async (req, res, next) => {
     try {
-      debug(req.params.id);
-      const foundWork = await Work.find({ _Owner: req.params.id });
+      const foundWork = await Work.findOne({ _Owner: req.params.id });
+      foundWork.SetUpHyperLinks(req.headers.host, req.originalUrl);
       res.json(foundWork);
     } catch (error) {
-      debug(error);
-      sendError(500, 'Error processing the request', error);
+      error.status = 500;
+      error.resMessage = 'Error processing the request';
+      next(error);
     }
   },
 
-  UpdateResource: async (req, res) => {
+  UpdateResource: async (req, res, next) => {
     try {
-      const updatedWork = await Work.findOneAndUpdate({ _Owner: req.params.id }, req.body, { new: true });
+      const updatedWork = await Work
+        .findOneAndUpdate({ _Owner: req.params.id }, { $set: req.body }, { new: true });
+      updatedWork.SetUpHyperLinks(req.headers.host, req.originalUrl);
       res.json(updatedWork);
     } catch (error) {
-      debug(error);
-      sendError(500, 'Error processing the request', error);
+      error.status = 500;
+      error.resMessage = 'Error processing the request';
+      next(error);
     }
   },
 };
 
-export default workController;
+module.exports = workController;
 

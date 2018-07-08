@@ -1,18 +1,52 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
+const hlGenerator = require('../../util/HyperMediaLinksGenerator');
 
 const scheduleSchema = new mongoose.Schema({
   _id: mongoose.Schema.Types.ObjectId,
-  employee_id: String,
-  work_date: Date,
-  start_work_hour: Date,
-  end_work_hour: Date,
-  is_holiday: Boolean,
-  is_weekend: Boolean,
-  links: [{
-    _id: false,
-    rel: String,
-    href: String,
-  }],
+  _Owner: { type: String, required: true },
+  work_date: { type: Date, required: true },
+  start_work_hour: { type: Date, required: true },
+  end_work_hour: { type: Date, required: true },
+  is_holiday: { type: Boolean, default: false },
+  is_weekend: { type: Boolean, default: false },
+  links: {
+    type: [{
+      _id: false,
+      rel: String,
+      type: { type: String, enum: ['GET', 'POST', 'PATCH', 'DELETE'] },
+      href: String,
+      description: String,
+    }],
+    default: [],
+  },
 });
 
-export default mongoose.model('Schedule', scheduleSchema);
+scheduleSchema.method('SetUpHyperLinks', function setupHL(hostName, url) {
+  {
+    const hateaosEndpoints = [
+      {
+        rel: 'owner',
+        type: 'GET',
+        description: 'view this schedules owner',
+      },
+      {
+        rel: 'self',
+        type: 'GET',
+        description: 'view this schedule',
+      },
+      {
+        rel: 'self',
+        type: 'PATCH',
+        description: 'update this schedule',
+      },
+      {
+        rel: 'self',
+        type: 'DELETE',
+        description: 'delete this schedulee',
+      },
+    ];
+    hlGenerator(this, hostName, url, hateaosEndpoints);
+  }
+});
+
+module.exports = mongoose.model('Schedule', scheduleSchema);

@@ -1,26 +1,30 @@
-import express from 'express';
-import api from './api/api';
-import middlewareSetup from './middleware/appMiddleware';
-import startDB from './db';
-import seedDb from './util/seedDB';
-import sendError from './util/sendError';
-import errorHandler from './util/errorHandler';
+const express = require('express');
+const api = require('./api/api');
+const auth = require('./auth/authRouter');
+const middlewareSetup = require('./middleware/appMiddleware');
+const startDB = require('./db');
+const seedDb = require('./util/seedDB');
+const errorHandler = require('./util/errorHandler');
 
 const app = express();
 
 startDB();
 seedDb();
 
-
 middlewareSetup(app);
 
 app.use('/api/v1', api);
+app.use('/api/v1/auth', auth);
 
-app.use(sendError(404, 'Resource not found'));
+app.use((req, res, next) => {
+  const error = new Error('Resource not found');
+  error.status = 404;
+  next(error);
+});
 
 
 app.use(errorHandler());
 
 
-export default app;
+module.exports = app;
 

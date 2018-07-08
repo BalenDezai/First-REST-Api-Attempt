@@ -1,15 +1,13 @@
-import faker from 'faker';
-import seeddebug from 'debug';
-import mongoose from 'mongoose';
-import Employee from '../api/employee/employeeModel';
-import Job from '../api/job/jobModel';
-import Wallet from '../api/wallet/walletModel';
-import Work from '../api/work/workModel';
-import Schedule from '../api/schedule/scheduleModel';
-import hateaosGen from './HyperMediaLinksGenerator';
-
-
-const debug = seeddebug('app:seedDatabase');
+const faker = require('faker');
+const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
+const Employee = require('../api/employee/employeeModel');
+const Job = require('../api/job/jobModel');
+const Wallet = require('../api/wallet/walletModel');
+const Work = require('../api/work/workModel');
+const User = require('../api/user/userModel');
+const Schedule = require('../api/schedule/scheduleModel');
+const logger = require('./loggerWrapper');
 
 const employees = [];
 const jobs = [];
@@ -21,10 +19,10 @@ const works = [];
 for (let index = 0; index < 20; index += 1) {
 
   const employee = {
-    _id: mongoose.Types.ObjectId(),
+    _id: new mongoose.Types.ObjectId(),
     firstName: faker.name.firstName(),
     lastName: faker.name.lastName(),
-    Birthday: faker.date.past(),
+    birthday: faker.date.past(),
     city: faker.address.city(),
     country: faker.address.country(),
     street: faker.address.streetAddress(),
@@ -33,25 +31,18 @@ for (let index = 0; index < 20; index += 1) {
     lastChanged: faker.date.past(),
     links: [],
   };
-  //  TODO: fix this and set it up
-  const employeeEndPoinst = ['self', 'wallet', 'schedule', 'workhours', 'job'];
-  hateaosGen(employee, 'localhost:3000/', 'api/v1/employee', employeeEndPoinst);
-
   const job = {
-    _id: mongoose.Types.ObjectId(),
-    JobTitle: faker.name.jobTitle(),
-    Description: faker.name.jobDescriptor(),
+    _id: new mongoose.Types.ObjectId(),
+    jobTitle: faker.name.jobTitle(),
+    description: faker.name.jobDescriptor(),
     _Owner: employee._id,
-    Permissions: faker.random.arrayElement(['Create', 'Read', 'Update', 'Delete']),
+    permissions: faker.random.arrayElement(['Create', 'Read', 'Update', 'Delete']),
     links: [],
   };
 
-  const jobEndPoinst = ['self'];
-  hateaosGen(employee, 'localhost:3000/', `api/v1/employee/${employee._id}/job`, jobEndPoinst);
-
   const schedule = {
-    _id: mongoose.Types.ObjectId(),
-    employee_id: employee._id,
+    _id: new mongoose.Types.ObjectId(),
+    _Owner: employee._id,
     work_date: faker.date.future(),
     start_work_hour: faker.date.future(),
     end_work_hour: faker.date.future(),
@@ -60,11 +51,8 @@ for (let index = 0; index < 20; index += 1) {
     links: [],
   };
 
-  const scheduleEndPoinst = ['self'];
-  hateaosGen(schedule, 'localhost:3000/', `api/v1/employee/${employee._id}/schedule`, scheduleEndPoinst);
-
   const wallet = {
-    _id: mongoose.Types.ObjectId(),
+    _id: new mongoose.Types.ObjectId(),
     wage: faker.finance.amount(),
     salary: faker.finance.amount(),
     paymentMethod: faker.random.arrayElement(['Monthly', 'Hourly']),
@@ -73,11 +61,8 @@ for (let index = 0; index < 20; index += 1) {
     links: [],
   };
 
-  const walletEndPoinst = ['self'];
-  hateaosGen(wallet, 'localhost:3000/', `api/v1/employee/${employee._id}/wallet`, walletEndPoinst);
-
   const work = {
-    _id: mongoose.Types.ObjectId(),
+    _id: new mongoose.Types.ObjectId(),
     work_start_date: faker.date.past(),
     work_end_date: faker.date.future(),
     work_hours_this_tear: faker.finance.amount(),
@@ -86,10 +71,6 @@ for (let index = 0; index < 20; index += 1) {
     links: [],
   };
 
-  const workEndPoinst = ['self'];
-  hateaosGen(work, 'localhost:3000/', `api/v1/employee/${employee._id}/work`, workEndPoinst);
-
-
   employees.push(employee);
   jobs.push(job);
   schedules.push(schedule);
@@ -97,22 +78,30 @@ for (let index = 0; index < 20; index += 1) {
   works.push(work);
 }
 
-export default async function () {
+module.exports = async function SeedDB() {
   try {
     await Employee.remove();
     await Job.remove();
     await Schedule.remove();
     await Wallet.remove();
     await Work.remove();
+    await User.remove();
 
     await Employee.create(employees);
     await Job.create(jobs);
     await Schedule.create(schedules);
     await Wallet.create(wallets);
     await Work.create(works);
+    await User.create({
+      _id: new mongoose.Types.ObjectId(),
+      username: 'test',
+      email: 'test@test.com',
+      password: 'test',
+      links: [],
+    });
 
-    debug('Removed and seeded DB');
+    logger.log('Removed and seeded DB', 'info', true);
   } catch (error) {
-    debug(error);
+    logger.log(error, 'error');
   }
-}
+};

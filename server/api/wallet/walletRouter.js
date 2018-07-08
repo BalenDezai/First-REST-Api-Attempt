@@ -1,8 +1,6 @@
-import express from 'express';
-import walletController from './walletController';
-import MessageService from '../../util/MessageService';
-
-const walletRouter = express.Router({ mergeParams: true });
+const walletRouter = require('express').Router({ mergeParams: true });
+const walletController = require('./walletController');
+const MessageService = require('../../util/MessageService');
 
 walletRouter.route('/')
   .get(walletController.FindResource)
@@ -10,4 +8,4 @@ walletRouter.route('/')
   .patch(walletController.UpdateResource)
   .delete(MessageService(405, 'Cannot delete a wallet'));
 
-export default walletRouter;
+module.exports = walletRouter;
