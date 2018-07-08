@@ -1,9 +1,11 @@
 const faker = require('faker');
 const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
 const Employee = require('../api/employee/employeeModel');
 const Job = require('../api/job/jobModel');
 const Wallet = require('../api/wallet/walletModel');
 const Work = require('../api/work/workModel');
+const User = require('../api/user/userModel');
 const Schedule = require('../api/schedule/scheduleModel');
 const logger = require('./loggerWrapper');
 
@@ -83,12 +85,20 @@ module.exports = async function SeedDB() {
     await Schedule.remove();
     await Wallet.remove();
     await Work.remove();
+    await User.remove();
 
     await Employee.create(employees);
     await Job.create(jobs);
     await Schedule.create(schedules);
     await Wallet.create(wallets);
     await Work.create(works);
+    await User.create({
+      _id: new mongoose.Types.ObjectId(),
+      username: 'test',
+      email: 'test@test.com',
+      password: 'test',
+      links: [],
+    });
 
     logger.log('Removed and seeded DB', 'info', true);
   } catch (error) {
