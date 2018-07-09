@@ -4,13 +4,13 @@ const User = require('./userModel');
 const userController = {
   getAllUsers: async (req, res, next) => {
     try {
-      const foundUsers = await User.find({}, 'username email links');
+      const foundUsers = await User.find({}, 'username email links employee');
       foundUsers.forEach((user) => {
         user.SetUpHyperLinks(req.headers.host, req.originalUrl);
       });
       const documents = {
         count: foundUsers.length,
-        employees: foundUsers,
+        users: foundUsers,
       };
       if (documents.count > 0) {
         res.status(200).json(documents);
@@ -25,8 +25,9 @@ const userController = {
   },
   getOneUser: async (req, res, next) => {
     try {
-      const foundUser = await User.findOne({ _id: req.params.id }, 'username email links');
+      const foundUser = await User.findOne({ _id: req.params.id }, 'username email links employee').populate('employee', 'firstName lastName email phoneNumber links');
       foundUser.SetUpHyperLinks(req.headers.host, req.originalUrl);
+      foundUser.employee.SetUpHyperLinks(req.headers.host, '/api/v1/employees/');
       res.status(200).json(foundUser);
     } catch (error) {
       error.status = 500;
@@ -34,7 +35,6 @@ const userController = {
       next(error);
     }
   },
-
   createOneUser: async (req, res, next) => {
     try {
       const foundUser = await User.findOne({ username: req.body.username });
@@ -51,14 +51,15 @@ const userController = {
           message: 'Email already exists',
         });
       }
+      const role = `${req.body.role.substring(0, 1).toUpperCase()}${req.body.role.substring(1, req.body.role.length - 1).toLowerCase()}`;
       const newUser = {
         _id: new mongoose.Types.ObjectId(),
         username: req.body.username,
         email: req.body.email,
+        role,
         password: req.body.password,
         links: [],
       };
-
       const createdUser = await User.create(newUser);
       createdUser.SetUpHyperLinks(req.headers.host, req.originalUrl);
       return res.status(201).json(createdUser.removePassword());

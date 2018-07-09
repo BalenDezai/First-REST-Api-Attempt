@@ -1,8 +1,11 @@
 const mongoose = require('mongoose');
+const crypto = require('crypto');
 const Employee = require('./employeeModel');
 const Job = require('../job/jobModel');
 const Wallet = require('../wallet/walletModel');
 const Work = require('../work/workModel');
+const User = require('../user/userModel');
+
 
 const employeeController = {
   FindResource: async (req, res, next) => {
@@ -29,8 +32,9 @@ const employeeController = {
 
   FindResourceById: async (req, res, next) => {
     try {
-      const foundEmployee = await Employee.findOne({ _id: req.params.id }).select('-_v');
+      const foundEmployee = await Employee.findOne({ _id: req.params.id }).populate('user', 'username email links');
       foundEmployee.SetUpHyperLinks(req.headers.host, req.originalUrl);
+      foundEmployee.user.SetUpHyperLinks(req.headers.host, '/api/v1/users/');
       res.status(200).json(foundEmployee);
     } catch (error) {
       error.status = 500;
@@ -46,7 +50,9 @@ const employeeController = {
         firstName: req.body.firstName,
         lastName: req.body.lastName,
         birthday: req.body.birthday,
+        email: req.body.email,
         city: req.body.city,
+        user: new mongoose.Types.ObjectId(),
         country: req.body.country,
         street: req.body.country,
         address: req.body.address,
@@ -67,6 +73,15 @@ const employeeController = {
       await Work.create({
         _id: new mongoose.Types.ObjectId(),
         _Owner: createdEmployee._id,
+      });
+      const username = `${req.body.firstName.substring(0, 2)}${req.body.lastName.substring(0, 2)}`;
+      const password = await crypto.randomBytes(12);
+      await User.create({
+        _id: newEmployee.user,
+        username,
+        email: newEmployee.email,
+        employee: newEmployee._id,
+        password: password.toString('hex'),
       });
       res.status(201).json(createdEmployee);
     } catch (error) {

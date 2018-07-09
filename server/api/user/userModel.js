@@ -11,6 +11,8 @@ const userSchema = new mongoose.Schema({
     unique: true,
     match: /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/,
   },
+  role: { type: String, enum: ['Master Administrator', 'Administrative', 'Employee'], default: 'Employee' },
+  employee: { type: mongoose.Schema.Types.ObjectId, ref: 'Employee' },
   password: { type: String, required: true },
   links: [{
     _id: false,

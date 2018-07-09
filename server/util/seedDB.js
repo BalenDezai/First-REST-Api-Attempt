@@ -1,6 +1,5 @@
 const faker = require('faker');
 const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
 const Employee = require('../api/employee/employeeModel');
 const Job = require('../api/job/jobModel');
 const Wallet = require('../api/wallet/walletModel');
@@ -22,6 +21,7 @@ for (let index = 0; index < 20; index += 1) {
     _id: new mongoose.Types.ObjectId(),
     firstName: faker.name.firstName(),
     lastName: faker.name.lastName(),
+    email: faker.internet.email(),
     birthday: faker.date.past(),
     city: faker.address.city(),
     country: faker.address.country(),
@@ -36,7 +36,6 @@ for (let index = 0; index < 20; index += 1) {
     jobTitle: faker.name.jobTitle(),
     description: faker.name.jobDescriptor(),
     _Owner: employee._id,
-    permissions: faker.random.arrayElement(['Create', 'Read', 'Update', 'Delete']),
     links: [],
   };
 
@@ -95,7 +94,8 @@ module.exports = async function SeedDB() {
     await User.create({
       _id: new mongoose.Types.ObjectId(),
       username: 'test',
-      email: 'test@test.com',
+      email: employees[0].email,
+      role: 'Master Administrator',
       password: 'test',
       links: [],
     });
