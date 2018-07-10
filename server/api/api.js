@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const verifyToken = require('../middleware/authMIddleware/verifyToken');
 const getFullUser = require('../middleware/authMIddleware/getFullUser');
+const verifyRole = require('../middleware/authMIddleware/verifyRole');
 const employeeRoute = require('./employee/employeeRouter');
 const walletRoute = require('./wallet/walletRouter');
 const scheduleRoute = require('./schedule/scheduleRoutes');
@@ -10,7 +11,7 @@ const userRoutes = require('./user/userRouter');
 
 const verifyTokenAndGetUser = [verifyToken(), getFullUser()];
 
-router.use('/users', verifyTokenAndGetUser, userRoutes);
+router.use('/users', verifyTokenAndGetUser, verifyRole(), userRoutes);
 router.use('/employees', verifyTokenAndGetUser, employeeRoute);
 router.use('/employees/:id/schedules', verifyTokenAndGetUser, scheduleRoute);
 router.use('/employees/:id/wallet', verifyTokenAndGetUser, walletRoute);

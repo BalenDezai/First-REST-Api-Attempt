@@ -6,7 +6,6 @@ const jobSchema = new mongoose.Schema({
   jobTitle: { type: String, default: 'Empty' },
   description: { type: String, default: 'Empty' },
   _Owner: { type: String, required: true },
-  permissions: { type: [], default: [] },
   links: {
     type: [{
       _id: false,
