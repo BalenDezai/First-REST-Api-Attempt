@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const hlGenerator = require('../../util/HyperMediaLinksGenerator');
 
 const scheduleSchema = new mongoose.Schema({
-  _id: mongoose.Schema.Types.ObjectId,
+  _id: { type: mongoose.Schema.Types.ObjectId, default: new mongoose.Types.ObjectId() },
   _Owner: { type: String, required: true },
   work_date: { type: Date, required: true },
   start_work_hour: { type: Date, required: true },

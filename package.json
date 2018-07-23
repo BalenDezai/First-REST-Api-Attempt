@@ -7,14 +7,13 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node ./server.js",
     "dev": "set DEBUG=app,app:*,Index & nodemon ./server.js ",
-    "lint": "node_modules/.bin/eslint app.js"
+    "lint": "node_modules/.bin/eslint server/**/*.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.3",
-    "debug": "^3.1.0",
     "dotenv": "^5.0.1",
     "express": "^4.16.3",
     "express-jwt": "^5.3.1",

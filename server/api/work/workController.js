@@ -7,8 +7,6 @@ const workController = {
       foundWork.SetUpHyperLinks(req.headers.host, req.originalUrl);
       res.json(foundWork);
     } catch (error) {
-      error.status = 500;
-      error.resMessage = 'Error processing the request';
       next(error);
     }
   },
@@ -20,8 +18,6 @@ const workController = {
       updatedWork.SetUpHyperLinks(req.headers.host, req.originalUrl);
       res.json(updatedWork);
     } catch (error) {
-      error.status = 500;
-      error.resMessage = 'Error processing the request';
       next(error);
     }
   },

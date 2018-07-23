@@ -16,7 +16,6 @@ const works = [];
 
 
 for (let index = 0; index < 20; index += 1) {
-
   const employee = {
     _id: new mongoose.Types.ObjectId(),
     firstName: faker.name.firstName(),

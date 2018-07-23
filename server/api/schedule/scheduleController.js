@@ -1,25 +1,22 @@
-const mongoose = require('mongoose');
 const Schedule = require('./scheduleModel');
 
 const scheduleController = {
   FindResource: async (req, res, next) => {
     try {
       const foundSchedule = await Schedule.find({ _Owner: req.params.id });
-      foundSchedule.forEach((schedule) => {
-        schedule.SetUpHyperLinks(req.headers.host, req.originalUrl);
-      });
       const documents = {
         count: foundSchedule.length,
         schedules: foundSchedule,
       };
       if (documents.count > 0) {
+        for (let i = 0; i < foundSchedule.length; i += 1) {
+          foundSchedule[i].SetUpHyperLinks(req.headers.host, req.originalUrl);
+        }
         res.status(200).json(documents);
       } else {
         res.status(204).json(documents);
       }
     } catch (error) {
-      error.status = 500;
-      error.resMessage = 'Error processing the request';
       next(error);
     }
   },
@@ -30,8 +27,6 @@ const scheduleController = {
       foundSchedule.SetUpHyperLinks(req.headers.host, req.originalUrl);
       res.status(200).json(foundSchedule);
     } catch (error) {
-      error.status = 500;
-      error.resMessage = 'Error processing the request';
       next(error);
     }
   },
@@ -39,7 +34,6 @@ const scheduleController = {
   CreateResource: async (req, res, next) => {
     try {
       const newSchedule = {
-        _id: new mongoose.Types.ObjectId(),
         _Owner: req.body._Owner || req.params.id,
         work_date: req.body.work_date,
         start_work_hour: req.body.start_work_hour,
@@ -51,8 +45,6 @@ const scheduleController = {
       createdSchedule.SetUpHyperLinks(req.headers.host, req.originalUrl);
       res.status(201).json(createdSchedule);
     } catch (error) {
-      error.status = 500;
-      error.resMessage = 'Error processing the request';
       next(error);
     }
   },
@@ -64,18 +56,15 @@ const scheduleController = {
       updatedSchedule.SetUpHyperLinks(req.headers.host, req.originalUrl);
       res.status(200).json(updatedSchedule);
     } catch (error) {
-      error.status = 500;
-      error.resMessage = 'Error processing the request';
       next(error);
     }
   },
+
   DeleteResource: async (req, res, next) => {
     try {
       await Schedule.findOneAndRemove({ _id: req.params.scheduleId });
       res.status(200).json({ status: 200, message: 'Successfully deleted schedule' });
     } catch (error) {
-      error.status = 500;
-      error.resMessage = 'Error processing the request';
       next(error);
     }
   },

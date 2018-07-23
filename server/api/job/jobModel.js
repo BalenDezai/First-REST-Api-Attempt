@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const hlGenerator = require('../../util/HyperMediaLinksGenerator');
 
 const jobSchema = new mongoose.Schema({
-  _id: mongoose.Schema.Types.ObjectId,
+  _id: { type: mongoose.Schema.Types.ObjectId, default: new mongoose.Types.ObjectId() },
   jobTitle: { type: String, default: 'Empty' },
   description: { type: String, default: 'Empty' },
   _Owner: { type: String, required: true },

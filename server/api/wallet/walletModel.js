@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const hlGenerator = require('../../util/HyperMediaLinksGenerator');
 
 const walletSchema = new mongoose.Schema({
-  _id: mongoose.Schema.Types.ObjectId,
+  _id: { type: mongoose.Schema.Types.ObjectId, default: new mongoose.Types.ObjectId() },
   wage: { type: Number, default: 0 },
   salary: { type: Number, default: 0 },
   paymentMethod: { type: String, enum: ['Monthly', 'Hourly'], default: 'Hourly' },

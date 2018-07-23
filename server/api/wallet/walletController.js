@@ -7,8 +7,6 @@ const walletController = {
       foundWallet.SetUpHyperLinks(req.headers.host, req.originalUrl);
       res.json(foundWallet);
     } catch (error) {
-      error.status = 500;
-      error.resMessage = 'Error processing the request';
       next(error);
     }
   },
@@ -21,8 +19,6 @@ const walletController = {
       updatedWallet.SetUpHyperLinks(req.headers.host, req.originalUrl);
       res.json(updatedWallet);
     } catch (error) {
-      error.status = 500;
-      error.resMessage = 'Error processing the request';
       next(error);
     }
   },

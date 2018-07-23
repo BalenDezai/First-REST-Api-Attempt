@@ -7,8 +7,6 @@ const jobController = {
       foundJob.SetUpHyperLinks(req.headers.host, req.originalUrl);
       res.status(200).json(foundJob);
     } catch (error) {
-      error.status = 500;
-      error.resMessage = 'Error processing the request';
       next(error);
     }
   },
@@ -20,8 +18,6 @@ const jobController = {
       updatedJob.SetUpHyperLinks(req.headers.host, req.originalUrl);
       res.status(200).json(updatedJob);
     } catch (error) {
-      error.status = 500;
-      error.resMessage = 'Error processing the request';
       next(error);
     }
   },

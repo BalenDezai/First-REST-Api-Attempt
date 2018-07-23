@@ -11,21 +11,19 @@ const employeeController = {
   FindResource: async (req, res, next) => {
     try {
       const foundEmployees = await Employee.find(req.query, 'firstName lastName phoneNumber links');
-      foundEmployees.forEach((employee) => {
-        employee.SetUpHyperLinks(req.headers.host, req.originalUrl);
-      });
       const documents = {
         count: foundEmployees.length,
         employees: foundEmployees,
       };
       if (documents.count > 0) {
+        for (let i = 0; i < foundEmployees.length; i += 1) {
+          foundEmployees[i].SetUpHyperLinks(req.headers.host, req.originalUrl);
+        }
         res.status(200).json(documents);
       } else {
         res.status(204).json(documents);
       }
     } catch (error) {
-      error.status = 500;
-      error.resMessage = 'Error processing the request';
       next(error);
     }
   },
@@ -37,8 +35,6 @@ const employeeController = {
       foundEmployee.user.SetUpHyperLinks(req.headers.host, '/api/v1/users/');
       res.status(200).json(foundEmployee);
     } catch (error) {
-      error.status = 500;
-      error.resMessage = 'Error processing the request';
       next(error);
     }
   },
@@ -63,15 +59,12 @@ const employeeController = {
       const createdEmployee = await Employee.create(newEmployee);
       createdEmployee.SetUpHyperLinks(req.headers.host, req.originalUrl);
       await Job.create({
-        _id: new mongoose.Types.ObjectId(),
         _Owner: createdEmployee._id,
       });
       await Wallet.create({
-        _id: new mongoose.Types.ObjectId(),
         _Owner: createdEmployee._id,
       });
       await Work.create({
-        _id: new mongoose.Types.ObjectId(),
         _Owner: createdEmployee._id,
       });
       const username = `${req.body.firstName.substring(0, 2)}${req.body.lastName.substring(0, 2)}`;
@@ -85,8 +78,6 @@ const employeeController = {
       });
       res.status(201).json(createdEmployee);
     } catch (error) {
-      error.status = 500;
-      error.resMessage = 'Error processing the request';
       next(error);
     }
   },
@@ -98,8 +89,6 @@ const employeeController = {
       updatedEmployee.SetUpHyperLinks(req.headers.host, req.originalUrl);
       res.status(200).json(updatedEmployee);
     } catch (error) {
-      error.status = 500;
-      error.resMessage = 'Error processing the request';
       next(error);
     }
   },
@@ -109,8 +98,6 @@ const employeeController = {
       await Employee.findOneAndRemove({ _id: req.params.id });
       res.status(200).json({ status: 200, message: 'Successfully deleted employee' });
     } catch (error) {
-      error.status = 500;
-      error.resMessage = 'Error processing the request';
       next(error);
     }
   },

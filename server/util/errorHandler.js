@@ -9,9 +9,11 @@ function handleError() {
         message: error.message,
       });
     }
-    res.status(error.status || 500).json({
-      status: error.status || 500,
-      message: error.resMessage || 'Unexpected Error',
+    const status = res.status || 500;
+    const resMessage = res.resMessage || 'Error proccessing the request';
+    return res.status(status).json({
+      status,
+      message: resMessage,
     });
   };
 }

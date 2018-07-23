@@ -1,25 +1,22 @@
-const mongoose = require('mongoose');
 const User = require('./userModel');
 
 const userController = {
   getAllUsers: async (req, res, next) => {
     try {
       const foundUsers = await User.find({}, 'username email links employee');
-      foundUsers.forEach((user) => {
-        user.SetUpHyperLinks(req.headers.host, req.originalUrl);
-      });
       const documents = {
         count: foundUsers.length,
         users: foundUsers,
       };
       if (documents.count > 0) {
+        for (let i = 0; i < foundUsers; i += 1) {
+          foundUsers[i].SetUpHyperLinks(req.headers.host, req.originalUrl);
+        }
         res.status(200).json(documents);
       } else {
         res.status(204).json(documents);
       }
     } catch (error) {
-      error.status = 500;
-      error.message = 'Error processing the request';
       next(error);
     }
   },
@@ -30,8 +27,6 @@ const userController = {
       foundUser.employee.SetUpHyperLinks(req.headers.host, '/api/v1/employees/');
       res.status(200).json(foundUser);
     } catch (error) {
-      error.status = 500;
-      error.message = 'Error processing the request';
       next(error);
     }
   },
@@ -53,19 +48,15 @@ const userController = {
       }
       const role = `${req.body.role.substring(0, 1).toUpperCase()}${req.body.role.substring(1, req.body.role.length - 1).toLowerCase()}`;
       const newUser = {
-        _id: new mongoose.Types.ObjectId(),
         username: req.body.username,
         email: req.body.email,
         role,
         password: req.body.password,
-        links: [],
       };
       const createdUser = await User.create(newUser);
       createdUser.SetUpHyperLinks(req.headers.host, req.originalUrl);
       return res.status(201).json(createdUser.removePassword());
     } catch (error) {
-      error.status = 500;
-      error.message = 'Error processing the request';
       return next(error);
     }
   },
@@ -77,8 +68,6 @@ const userController = {
       updatedUser.SetUpHyperLinks(req.headers.host, req.originalUrl);
       res.status(200).json(updatedUser);
     } catch (error) {
-      error.status = 500;
-      error.message = 'Error processing the request';
       next(error);
     }
   },
@@ -88,8 +77,6 @@ const userController = {
       await User.findOneAndRemove({ _id: req.params.id });
       res.status(200).json({ status: 200, message: 'Successfully deleted user' });
     } catch (error) {
-      error.status = 500;
-      error.message = 'Error processing the request';
       next(error);
     }
   },

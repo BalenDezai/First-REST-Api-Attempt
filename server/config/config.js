@@ -5,8 +5,8 @@ const dev = {
     port: process.env.DEV_PORT || 3000,
   },
   jwt: {
-    secret: process.env.JWTKEY || 'SuperSecret',
-    expireTime: process.env.EXPIRE_TIME || '1h',
+    secret: process.env.DEV_JWTKEY || 'SuperSecret',
+    expireTime: process.env.DEV_EXPIRE_TIME || '1h',
   },
   db: {
     host: process.env.DEV_DB_HOST || 'localhost',
@@ -21,8 +21,8 @@ const test = {
     port: process.env.TEST_PORT || 3000,
   },
   Jwt: {
-    secret: process.env.JWTKEY || 'SuperSecret',
-    expireTime: process.env.EXPIRE_TIME || '1h',
+    secret: process.env.TEST_JWTKEY || 'SuperSecret',
+    expireTime: process.env.TEST_EXPIRE_TIME || '1h',
   },
   db: {
     host: process.env.TEST_DB_HOST || 'localhost',
@@ -34,16 +34,16 @@ const test = {
 
 const prod = {
   app: {
-    port: process.env.TEST_PORT,
+    port: process.env.PROD_PORT,
   },
   Jwt: {
-    secret: process.env.JWTKEY,
-    expireTime: process.env.EXPIRE_TIME,
+    secret: process.env.PROD_JWTKEY,
+    expireTime: process.env.PROD_EXPIRE_TIME,
   },
   db: {
-    host: process.env.TEST_DB_HOST,
-    port: process.env.TEST_DB_PORT,
-    name: process.env.TEST_DB_NAME,
+    host: process.env.PROD_DB_HOST,
+    port: process.env.PROD_DB_PORT,
+    name: process.env.PROD_DB_NAME,
   },
 };
 
