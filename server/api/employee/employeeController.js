@@ -51,7 +51,6 @@ const employeeController = {
         user: new mongoose.Types.ObjectId(),
         country: req.body.country,
         street: req.body.country,
-        address: req.body.address,
         phoneNumber: req.body.phoneNumber,
         startDate: req.body.startDate,
         lastChanged: req.body.lastChanged,
