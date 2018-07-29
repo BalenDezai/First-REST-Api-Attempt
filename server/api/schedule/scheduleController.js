@@ -34,7 +34,7 @@ const scheduleController = {
   CreateResource: async (req, res, next) => {
     try {
       const newSchedule = {
-        _Owner: req.body._Owner || req.params.id,
+        _Owner: req.params.id,
         work_date: req.body.work_date,
         start_work_hour: req.body.start_work_hour,
         end_work_hour: req.body.end_work_hour,

@@ -6,7 +6,7 @@ const verifyRole = require('../../middleware/authMIddleware/verifyRole');
 walletRouter.route('/')
   .get(walletController.FindResource)
   .post(MessageService(405, 'Cannot create a new wallet'))
-  .patch(verifyRole, walletController.UpdateResource)
+  .patch(verifyRole(), walletController.UpdateResource)
   .delete(MessageService(405, 'Cannot delete a wallet'));
 
 module.exports = walletRouter;
