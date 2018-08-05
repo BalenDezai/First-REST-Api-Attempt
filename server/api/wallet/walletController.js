@@ -11,9 +11,14 @@ const walletController = {
     }
   },
 
-
   UpdateResource: async (req, res, next) => {
     try {
+      if (Object.prototype.hasOwnProperty.call(req.body, 'wage')) {
+        req.body.wage = `${req.body.wage.substring(0, 1).toUpperCase()}${req.body.wage.substring(1, req.body.wage.length).toLowerCase()}`;
+      }
+      if (!Object.prototype.hasOwnProperty.call(req.body, 'lastChanged')) {
+        req.body.lastChanged = Date.now();
+      }
       const updatedWallet = await Wallet
         .findOneAndUpdate({ _Owner: req.params.id }, { $set: req.body }, { new: true });
       updatedWallet.SetUpHyperLinks(req.headers.host, req.originalUrl);

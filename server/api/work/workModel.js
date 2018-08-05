@@ -5,7 +5,7 @@ const workSchema = new mongoose.Schema({
   _id: { type: mongoose.Schema.Types.ObjectId, default: new mongoose.Types.ObjectId() },
   work_start_date: { type: Date, default: Date.now() },
   work_end_date: { type: Date, default: Date.now() },
-  work_hours_this_tear: { type: Number, default: 0 },
+  work_hours_this_year: { type: Number, default: 0 },
   TotalHours: { type: Number, default: 0 },
   _Owner: { type: String, required: true },
   links: {

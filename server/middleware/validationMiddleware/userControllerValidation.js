@@ -5,7 +5,7 @@ exports.createFields = [
   body('email', 'Must specify a valid email').exists().isString().isEmail(),
   body('role', 'Must specify a valid role').isString().custom((value) => {
     const check = ['employee', 'administrator', 'master administrator'];
-    return check.includes(value.toLowerString());
+    return check.includes(value.toLowerCase());
   }),
   body('password', 'Must specify a valid string').exists().isString(),
 ];
@@ -13,6 +13,9 @@ exports.createFields = [
 exports.updateFields = [
   body('username', 'Must specify a valid username').isString(),
   body('email', 'Must specify a valid email').isString().isEmail(),
-  body('role', 'Must specify a valid role').isString(),
+  body('role', 'Must specify a valid role').isString().custom((value) => {
+    const check = ['employee', 'administrator', 'master administrator'];
+    return check.includes(value.toLowerCase());
+  }),
   body('password', 'Must specify a valid string').isString(),
 ];

@@ -8,6 +8,7 @@ const User = require('../api/user/userModel');
 const Schedule = require('../api/schedule/scheduleModel');
 const logger = require('./loggerWrapper');
 
+const users = [];
 const employees = [];
 const jobs = [];
 const schedules = [];
@@ -16,14 +17,27 @@ const works = [];
 
 
 for (let index = 0; index < 20; index += 1) {
-  const employee = {
+
+  const empId = new mongoose.Types.ObjectId();
+
+  const user = {
     _id: new mongoose.Types.ObjectId(),
+    username: `${faker.random.word()}${faker.name.firstName()}`,
+    email: faker.internet.email(),
+    role: faker.random.arrayElement(['Master administrator', 'Administrative', 'Employee']),
+    employee: empId,
+    password: faker.random.word(),
+  };
+
+  const employee = {
+    _id: empId,
     firstName: faker.name.firstName(),
     lastName: faker.name.lastName(),
     email: faker.internet.email(),
     birthday: faker.date.past(),
     city: faker.address.city(),
     country: faker.address.country(),
+    user: user._id,
     street: faker.address.streetAddress(),
     phoneNumber: faker.phone.phoneNumber(),
     startDate: faker.date.past(),
@@ -51,9 +65,8 @@ for (let index = 0; index < 20; index += 1) {
 
   const wallet = {
     _id: new mongoose.Types.ObjectId(),
-    wage: faker.finance.amount(),
+    wage: faker.random.arrayElement(['Monthly', 'Hourly']),
     salary: faker.finance.amount(),
-    paymentMethod: faker.random.arrayElement(['Monthly', 'Hourly']),
     _Owner: employee._id,
     lastChanged: faker.date.past(),
     links: [],
@@ -69,6 +82,8 @@ for (let index = 0; index < 20; index += 1) {
     links: [],
   };
 
+
+  users.push(user);
   employees.push(employee);
   jobs.push(job);
   schedules.push(schedule);
@@ -85,6 +100,7 @@ module.exports = async function SeedDB() {
     await Work.remove();
     await User.remove();
 
+    await User.create(users);
     await Employee.create(employees);
     await Job.create(jobs);
     await Schedule.create(schedules);
@@ -93,8 +109,8 @@ module.exports = async function SeedDB() {
     await User.create({
       _id: new mongoose.Types.ObjectId(),
       username: 'test',
-      email: employees[0].email,
-      role: 'Master Administrator',
+      email: faker.internet.email(),
+      role: 'Master administrator',
       password: 'test',
       links: [],
     });

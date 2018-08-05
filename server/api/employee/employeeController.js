@@ -8,7 +8,7 @@ const User = require('../user/userModel');
 
 
 const employeeController = {
-  FindResource: async (req, res, next) => {
+  GetAllEmployees: async (req, res, next) => {
     try {
       const foundEmployees = await Employee.find(req.query, 'firstName lastName phoneNumber links');
       const documents = {
@@ -28,8 +28,15 @@ const employeeController = {
     }
   },
 
-  FindResourceById: async (req, res, next) => {
+  getEmployeeById: async (req, res, next) => {
     try {
+      //  make sure user put req.params.id is avalid mongoose object
+      if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+        const error = new Error();
+        error.status = 404;
+        error.resMessage = 'Invalid ID';
+        next(error);
+      }
       const foundEmployee = await Employee.findOne({ _id: req.params.id }).populate('user', 'username email links');
       foundEmployee.SetUpHyperLinks(req.headers.host, req.originalUrl);
       foundEmployee.user.SetUpHyperLinks(req.headers.host, '/api/v1/users/');
@@ -39,7 +46,7 @@ const employeeController = {
     }
   },
 
-  CreateResource: async (req, res, next) => {
+  createEmployee: async (req, res, next) => {
     try {
       const newEmployee = {
         _id: new mongoose.Types.ObjectId(),
@@ -48,33 +55,37 @@ const employeeController = {
         birthday: req.body.birthday,
         email: req.body.email,
         city: req.body.city,
-        user: new mongoose.Types.ObjectId(),
         country: req.body.country,
         street: req.body.country,
         phoneNumber: req.body.phoneNumber,
         startDate: req.body.startDate,
-        lastChanged: req.body.lastChanged,
+        lastChanged: new Date(),
       };
-      const createdEmployee = await Employee.create(newEmployee);
-      createdEmployee.SetUpHyperLinks(req.headers.host, req.originalUrl);
-      await Job.create({
-        _Owner: createdEmployee._id,
-      });
-      await Wallet.create({
-        _Owner: createdEmployee._id,
-      });
-      await Work.create({
-        _Owner: createdEmployee._id,
-      });
       const username = `${req.body.firstName.substring(0, 2)}${req.body.lastName.substring(0, 2)}`;
       const password = await crypto.randomBytes(12);
-      await User.create({
-        _id: newEmployee.user,
+      const newUser = {
+        _id: new mongoose.Types.ObjectId(),
         username,
         email: newEmployee.email,
         employee: newEmployee._id,
         password: password.toString('hex'),
+      };
+      newEmployee.user = newUser._id;
+      const createdEmployee = await Employee.create(newEmployee);
+      createdEmployee.SetUpHyperLinks(req.headers.host, req.originalUrl);
+      await Job.create({
+        _id: new mongoose.Types.ObjectId(),
+        _Owner: createdEmployee._id,
       });
+      await Wallet.create({
+        _id: new mongoose.Types.ObjectId(),
+        _Owner: createdEmployee._id,
+      });
+      await Work.create({
+        _id: new mongoose.Types.ObjectId(),
+        _Owner: createdEmployee._id,
+      });
+      await User.create(newUser);
       res.status(201).json(createdEmployee);
     } catch (error) {
       next(error);
@@ -83,6 +94,7 @@ const employeeController = {
 
   UpdateResource: async (req, res, next) => {
     try {
+      req.body.lastChanged = new Date();
       const updatedEmployee = await Employee
         .findOneAndUpdate({ _id: req.params.id }, { $set: req.body }, { new: true });
       updatedEmployee.SetUpHyperLinks(req.headers.host, req.originalUrl);

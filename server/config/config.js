@@ -2,7 +2,7 @@ const env = process.env.NODE_ENV;
 
 const dev = {
   app: {
-    port: process.env.DEV_PORT || 3000,
+    port: parseInt(process.env.DEV_PORT, 10) || 3000,
   },
   jwt: {
     secret: process.env.DEV_JWTKEY || 'SuperSecret',
@@ -18,7 +18,7 @@ const dev = {
 
 const test = {
   app: {
-    port: process.env.TEST_PORT || 3000,
+    port: parseInt(process.env.TEST_PORT, 10) || 3000,
   },
   Jwt: {
     secret: process.env.TEST_JWTKEY || 'SuperSecret',
@@ -34,7 +34,7 @@ const test = {
 
 const prod = {
   app: {
-    port: process.env.PROD_PORT,
+    port: parseInt(process.env.PROD_PORT, 10),
   },
   Jwt: {
     secret: process.env.PROD_JWTKEY,
