@@ -1,7 +1,7 @@
 const Work = require('./workModel');
 
-const workController = {
-  FindResource: async (req, res, next) => {
+module.exports = class WorkController {
+  static async getWorkById(req, res, next) {
     try {
       const foundWork = await Work.findOne({ _Owner: req.params.id });
       foundWork.SetUpHyperLinks(req.headers.host, req.originalUrl);
@@ -9,9 +9,9 @@ const workController = {
     } catch (error) {
       next(error);
     }
-  },
+  }
 
-  UpdateResource: async (req, res, next) => {
+  static async updateWorkById(req, res, next) {
     try {
       const updatedWork = await Work
         .findOneAndUpdate({ _Owner: req.params.id }, { $set: req.body }, { new: true });
@@ -20,8 +20,5 @@ const workController = {
     } catch (error) {
       next(error);
     }
-  },
+  }
 };
-
-module.exports = workController;
-

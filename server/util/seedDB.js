@@ -55,11 +55,10 @@ for (let index = 0; index < 20; index += 1) {
   const schedule = {
     _id: new mongoose.Types.ObjectId(),
     _Owner: employee._id,
-    work_date: faker.date.future(),
-    start_work_hour: faker.date.future(),
-    end_work_hour: faker.date.future(),
-    is_holiday: faker.random.boolean(),
-    is_weekend: faker.random.boolean(),
+    start: faker.date.future(),
+    end: faker.date.future(),
+    holiday: faker.random.boolean(),
+    weekend: faker.random.boolean(),
     links: [],
   };
 

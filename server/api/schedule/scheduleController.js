@@ -1,7 +1,7 @@
 const Schedule = require('./scheduleModel');
 
-const scheduleController = {
-  FindResource: async (req, res, next) => {
+module.exports = class ScheduleController {
+  static async getAllSchedules(req, res, next) {
     try {
       const foundSchedule = await Schedule.find({ _Owner: req.params.id });
       const documents = {
@@ -19,9 +19,9 @@ const scheduleController = {
     } catch (error) {
       next(error);
     }
-  },
+  }
 
-  findResourceById: async (req, res, next) => {
+  static async getScheduleById(req, res, next) {
     try {
       const foundSchedule = await Schedule.findOne({ _id: req.params.scheduleId });
       foundSchedule.SetUpHyperLinks(req.headers.host, req.originalUrl);
@@ -29,17 +29,16 @@ const scheduleController = {
     } catch (error) {
       next(error);
     }
-  },
+  }
 
-  CreateResource: async (req, res, next) => {
+  static async createSchedule(req, res, next) {
     try {
       const newSchedule = {
         _Owner: req.params.id,
-        work_date: req.body.work_date,
-        start_work_hour: req.body.start_work_hour,
-        end_work_hour: req.body.end_work_hour,
-        is_holiday: req.body.is_holiday,
-        is_weekend: req.body._is_weekend,
+        start: req.body.start,
+        end: req.body.end,
+        holiday: req.body.holiday,
+        weekend: req.body.weekend,
       };
       const createdSchedule = await Schedule.create(newSchedule);
       createdSchedule.SetUpHyperLinks(req.headers.host, req.originalUrl);
@@ -47,9 +46,9 @@ const scheduleController = {
     } catch (error) {
       next(error);
     }
-  },
+  }
 
-  UpdateResource: async (req, res, next) => {
+  static async updatedScheduleById(req, res, next) {
     try {
       const updatedSchedule = await Schedule
         .findOneAndUpdate({ _id: req.params.scheduleId }, { $set: req.body }, { new: true });
@@ -58,16 +57,14 @@ const scheduleController = {
     } catch (error) {
       next(error);
     }
-  },
+  }
 
-  DeleteResource: async (req, res, next) => {
+  static async deleteScheduleById(req, res, next) {
     try {
       await Schedule.findOneAndRemove({ _id: req.params.scheduleId });
       res.status(200).json({ status: 200, message: 'Successfully deleted schedule' });
     } catch (error) {
       next(error);
     }
-  },
+  }
 };
-
-module.exports = scheduleController;

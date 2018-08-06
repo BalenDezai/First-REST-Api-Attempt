@@ -6,9 +6,8 @@ const Wallet = require('../wallet/walletModel');
 const Work = require('../work/workModel');
 const User = require('../user/userModel');
 
-
-const employeeController = {
-  GetAllEmployees: async (req, res, next) => {
+module.exports = class EmployeeController {
+  static async GetAllEmployees(req, res, next) {
     try {
       const foundEmployees = await Employee.find(req.query, 'firstName lastName phoneNumber links');
       const documents = {
@@ -26,9 +25,9 @@ const employeeController = {
     } catch (error) {
       next(error);
     }
-  },
+  }
 
-  getEmployeeById: async (req, res, next) => {
+  static async getEmployeeById(req, res, next) {
     try {
       //  make sure user put req.params.id is avalid mongoose object
       if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
@@ -44,9 +43,9 @@ const employeeController = {
     } catch (error) {
       next(error);
     }
-  },
+  }
 
-  createEmployee: async (req, res, next) => {
+  static async createEmployee(req, res, next) {
     try {
       const newEmployee = {
         _id: new mongoose.Types.ObjectId(),
@@ -90,9 +89,9 @@ const employeeController = {
     } catch (error) {
       next(error);
     }
-  },
+  }
 
-  UpdateResource: async (req, res, next) => {
+  static async updateEmployeeById(req, res, next) {
     try {
       req.body.lastChanged = new Date();
       const updatedEmployee = await Employee
@@ -102,17 +101,13 @@ const employeeController = {
     } catch (error) {
       next(error);
     }
-  },
-
-  DeleteResource: async (req, res, next) => {
+  }
+  static async deleteEmployeeById(req, res, next) {
     try {
       await Employee.findOneAndRemove({ _id: req.params.id });
       res.status(200).json({ status: 200, message: 'Successfully deleted employee' });
     } catch (error) {
       next(error);
     }
-  },
+  }
 };
-
-module.exports = employeeController;
-

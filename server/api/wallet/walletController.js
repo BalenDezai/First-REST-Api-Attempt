@@ -1,7 +1,7 @@
 const Wallet = require('./walletModel');
 
-const walletController = {
-  FindResource: async (req, res, next) => {
+module.exports = class WalletController {
+  static async getWalletById(req, res, next) {
     try {
       const foundWallet = await Wallet.findOne({ _Owner: req.params.id });
       foundWallet.SetUpHyperLinks(req.headers.host, req.originalUrl);
@@ -9,9 +9,9 @@ const walletController = {
     } catch (error) {
       next(error);
     }
-  },
+  }
 
-  UpdateResource: async (req, res, next) => {
+  static async updateWalletById(req, res, next) {
     try {
       if (Object.prototype.hasOwnProperty.call(req.body, 'wage')) {
         req.body.wage = `${req.body.wage.substring(0, 1).toUpperCase()}${req.body.wage.substring(1, req.body.wage.length).toLowerCase()}`;
@@ -26,8 +26,5 @@ const walletController = {
     } catch (error) {
       next(error);
     }
-  },
+  }
 };
-
-module.exports = walletController;
-

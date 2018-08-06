@@ -3,8 +3,8 @@ const jwt = require('jsonwebtoken');
 const User = require('../api/user/userModel');
 const config = require('../config/config');
 
-const authController = {
-  registerUser: async (req, res, next) => {
+module.exports = class AuthController {
+  static async registerUser(req, res, next) {
     try {
       const foundUser = await User.findOne({ username: req.body.username });
       const foundEmail = await User.findOne({ email: req.body.email });
@@ -38,9 +38,9 @@ const authController = {
       error.resMessage = 'Error creating user';
       return next(error);
     }
-  },
+  }
 
-  signinUser: async (req, res, next) => {
+  static async signinUser(req, res, next) {
     try {
       const token = await jwt
         .sign({ _id: req.user._id }, config.jwt.secret, { expiresIn: config.jwt.expireTime });
@@ -54,9 +54,9 @@ const authController = {
       error.resMessage = 'Error signing in user';
       return next(error);
     }
-  },
+  }
 
-  updateCurrentUser: async (req, res, next) => {
+  static async updateCurrentUser(req, res, next) {
     try {
       const updatedUser = await User
         .findOneAndUpdate({ _id: req.user._id }, { $set: req.body }, { new: true, fields: 'username email links' });
@@ -67,13 +67,13 @@ const authController = {
       error.message = 'Error processing the request';
       next(error);
     }
-  },
+  }
 
-  viewCurrentUserUser: async (req, res) => {
+  static viewCurrentUserUser(req, res) {
     res.status(200).json(req.user);
-  },
+  }
 
-  deleteCurrentUser: async (req, res, next) => {
+  static async deleteCurrentUser(req, res, next) {
     try {
       await User.findOneAndRemove({ _id: req.user._id });
       res.status(200).json({ status: 200, message: 'Successfully deleted user' });
@@ -82,7 +82,5 @@ const authController = {
       error.message = 'Error processing the request';
       next(error);
     }
-  },
+  }
 };
-
-module.exports = authController;

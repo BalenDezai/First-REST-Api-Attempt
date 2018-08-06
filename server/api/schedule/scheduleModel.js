@@ -4,11 +4,10 @@ const hlGenerator = require('../../util/HyperMediaLinksGenerator');
 const scheduleSchema = new mongoose.Schema({
   _id: { type: mongoose.Schema.Types.ObjectId, default: new mongoose.Types.ObjectId() },
   _Owner: { type: String, required: true },
-  work_date: { type: Date, required: true },
-  start_work_hour: { type: Date, required: true },
-  end_work_hour: { type: Date, required: true },
-  is_holiday: { type: Boolean, default: false },
-  is_weekend: { type: Boolean, default: false },
+  start: { type: Date, required: true },
+  end: { type: Date, required: true },
+  holiday: { type: Boolean, default: false },
+  weekend: { type: Boolean, default: false },
   links: {
     type: [{
       _id: false,

@@ -1,7 +1,7 @@
 const Job = require('./jobModel');
 
-const jobController = {
-  FindResource: async (req, res, next) => {
+module.exports = class JobController {
+  static async getJobById(req, res, next) {
     try {
       const foundJob = await Job.findOne({ _Owner: req.params.id });
       foundJob.SetUpHyperLinks(req.headers.host, req.originalUrl);
@@ -9,9 +9,9 @@ const jobController = {
     } catch (error) {
       next(error);
     }
-  },
+  }
 
-  UpdateResource: async (req, res, next) => {
+  static async updateJobById(req, res, next) {
     try {
       const updatedJob = await Job
         .findOneAndUpdate({ _Owner: req.params.id }, { $set: req.body }, { new: true });
@@ -20,8 +20,5 @@ const jobController = {
     } catch (error) {
       next(error);
     }
-  },
+  }
 };
-
-module.exports = jobController;
-

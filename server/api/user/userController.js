@@ -1,7 +1,7 @@
 const User = require('./userModel');
 
-const userController = {
-  getAllUsers: async (req, res, next) => {
+module.exports = class UserController {
+  static async getAllUsers(req, res, next) {
     try {
       const foundUsers = await User.find({}, 'username email links employee');
       const documents = {
@@ -19,8 +19,9 @@ const userController = {
     } catch (error) {
       next(error);
     }
-  },
-  getOneUser: async (req, res, next) => {
+  }
+
+  static async getOneUser(req, res, next) {
     try {
       const foundUser = await User.findOne({ _id: req.params.id }, 'username email links employee').populate('employee', 'firstName lastName email phoneNumber links');
       foundUser.SetUpHyperLinks(req.headers.host, req.originalUrl);
@@ -29,8 +30,9 @@ const userController = {
     } catch (error) {
       next(error);
     }
-  },
-  createOneUser: async (req, res, next) => {
+  }
+
+  static async createOneUser(req, res, next) {
     try {
       const foundUser = await User.findOne({ username: req.body.username });
       const foundEmail = await User.findOne({ email: req.body.email });
@@ -59,9 +61,9 @@ const userController = {
     } catch (error) {
       return next(error);
     }
-  },
+  }
 
-  updateOneUser: async (req, res, next) => {
+  static async updateOneUser(req, res, next) {
     try {
       const updatedUser = await User
         .findOneAndUpdate({ _id: req.params.id }, { $set: req.body }, { new: true, fields: 'username email links' });
@@ -70,16 +72,14 @@ const userController = {
     } catch (error) {
       next(error);
     }
-  },
+  }
 
-  deleteOneUser: async (req, res, next) => {
+  static async deleteOneUser(req, res, next) {
     try {
       await User.findOneAndRemove({ _id: req.params.id });
       res.status(200).json({ status: 200, message: 'Successfully deleted user' });
     } catch (error) {
       next(error);
     }
-  },
+  }
 };
-
-module.exports = userController;

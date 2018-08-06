@@ -13,16 +13,19 @@ exports.createFields = [
 
   body('birthday')
     .custom((birthday) => {
-      const birthDate = moment(birthday, 'YYYY-MM-dd', true);
+      const birthDate = moment(birthday, 'YYYY/MM/DD', true);
       if (birthDate.isValid()) {
-        return false;
+        return true;
       }
-      return true;
+      return false;
     })
     .withMessage('birthday is not a valid format')
     .custom((birthday) => {
-      const fifteenYearsAgo = moment().subtract(15, 'years').format();
-      const birthDate = moment(birthday).format();
+      const fifteenYearsAgo = moment().subtract(15, 'years');
+      const birthDate = moment(birthday, 'YYYY/MM/DD', true);
+      if (!birthDate.isValid()) {
+        return false;
+      }
       if (fifteenYearsAgo > birthDate) {
         return true;
       }
@@ -32,7 +35,7 @@ exports.createFields = [
 
   body('email', 'Must specify a valid email')
     .isString().withMessage('email must be a string')
-    .isEmail('email must be a valid email')
+    .isEmail().withMessage('email must be a valid email')
     .custom(async (email) => {
       const foundEmail = await Employee.findOne({ email }).lean();
       if (!foundEmail) {
@@ -58,8 +61,17 @@ exports.createFields = [
     .isNumeric().withMessage('phoneNumber must be a number')
     .isMobilePhone('da-DK').withMessage('phoneNumber must be a valid phone number'),
 
-  body('startDate', 'Must specify a valid date')
-    .isISO8601(),
+  body('startDate')
+    .custom((startDate) => {
+      const birthDate = moment(startDate, 'YYYY/MM/DD', true);
+      if (birthDate.isValid()) {
+        return true;
+      }
+      return false;
+    })
+    .withMessage('startDate is not a valid format'),
+  body('lastChanged')
+    .isEmpty().withMessage('lastChanged must be left empty'),
 ];
 
 exports.updateFields = [
@@ -75,7 +87,27 @@ exports.updateFields = [
     .optional(),
 
   body('birthday', 'Must specify a valid birthday')
-    .isISO8601().isBefore(Date.now().toString()),
+    .custom((birthday) => {
+      const birthDate = moment(birthday, 'YYYY/MM/DD', true);
+      if (birthDate.isValid()) {
+        return true;
+      }
+      return false;
+    })
+    .withMessage('birthday is not a valid format')
+    .custom((birthday) => {
+      const fifteenYearsAgo = moment().subtract(15, 'years');
+      const birthDate = moment(birthday, 'YYYY/MM/DD', true);
+      if (!birthDate.isValid()) {
+        return false;
+      }
+      if (fifteenYearsAgo > birthDate) {
+        return true;
+      }
+      return false;
+    })
+    .withMessage('birthday must be at least 18 years or older')
+    .optional(),
 
   body('email')
     .isString().withMessage('email must be a string')
@@ -107,8 +139,20 @@ exports.updateFields = [
 
   body('phoneNumber', 'Must specify a valid phone number')
     .isNumeric().withMessage('phoneNumber must be a number')
-    .isMobilePhone('da-DK').withMessage('phoneNumber must be a valid number'),
+    .isMobilePhone('da-DK').withMessage('phoneNumber must be a valid number')
+    .optional(),
 
-  body('startDate', 'Must specify a valid date')
-    .isISO8601(),
+  body('startDate')
+    .custom((startDate) => {
+      const birthDate = moment(startDate, 'YYYY/MM/DD', true);
+      if (birthDate.isValid()) {
+        return true;
+      }
+      return false;
+    })
+    .withMessage('startDate is not a valid format')
+    .optional(),
+
+  body('lastChanged')
+    .isEmpty().withMessage('lastChanged must be empty'),
 ];
