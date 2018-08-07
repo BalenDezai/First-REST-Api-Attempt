@@ -7,7 +7,18 @@ const Work = require('../work/workModel');
 const User = require('../user/userModel');
 
 module.exports = class EmployeeController {
-  static async GetAllEmployees(req, res, next) {
+  static idValidParam(req, res, next) {
+    //  make sure user put req.params.id is avalid mongoose object
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      const error = new Error();
+      error.status = 404;
+      error.resMessage = 'Invalid ID';
+      next(error);
+    }
+    next();
+  }
+
+  static async getAllEmployees(req, res, next) {
     try {
       const foundEmployees = await Employee.find(req.query, 'firstName lastName phoneNumber links');
       const documents = {
@@ -29,15 +40,8 @@ module.exports = class EmployeeController {
 
   static async getEmployeeById(req, res, next) {
     try {
-      //  make sure user put req.params.id is avalid mongoose object
-      if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-        const error = new Error();
-        error.status = 404;
-        error.resMessage = 'Invalid ID';
-        next(error);
-      }
       const foundEmployee = await Employee.findOne({ _id: req.params.id }).populate('user', 'username email links');
-      foundEmployee.SetUpHyperLinks(req.headers.host, req.originalUrl);
+      foundEmployee.SetUpHyperLinks(req.headers.host, req.originalUrl, true);
       foundEmployee.user.SetUpHyperLinks(req.headers.host, '/api/v1/users/');
       res.status(200).json(foundEmployee);
     } catch (error) {
@@ -58,7 +62,6 @@ module.exports = class EmployeeController {
         street: req.body.country,
         phoneNumber: req.body.phoneNumber,
         startDate: req.body.startDate,
-        lastChanged: new Date(),
       };
       const username = `${req.body.firstName.substring(0, 2)}${req.body.lastName.substring(0, 2)}`;
       const password = await crypto.randomBytes(12);
@@ -73,15 +76,12 @@ module.exports = class EmployeeController {
       const createdEmployee = await Employee.create(newEmployee);
       createdEmployee.SetUpHyperLinks(req.headers.host, req.originalUrl);
       await Job.create({
-        _id: new mongoose.Types.ObjectId(),
         _Owner: createdEmployee._id,
       });
       await Wallet.create({
-        _id: new mongoose.Types.ObjectId(),
         _Owner: createdEmployee._id,
       });
       await Work.create({
-        _id: new mongoose.Types.ObjectId(),
         _Owner: createdEmployee._id,
       });
       await User.create(newUser);
@@ -93,6 +93,11 @@ module.exports = class EmployeeController {
 
   static async updateEmployeeById(req, res, next) {
     try {
+      //  performance might be worse than other options
+      //  TODO: reconsider
+      delete req.body._id;
+      delete req.body.user;
+      delete req.body.lastChanged;
       req.body.lastChanged = new Date();
       const updatedEmployee = await Employee
         .findOneAndUpdate({ _id: req.params.id }, { $set: req.body }, { new: true });

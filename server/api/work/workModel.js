@@ -2,11 +2,11 @@ const mongoose = require('mongoose');
 const hlGenerator = require('../../util/HyperMediaLinksGenerator');
 
 const workSchema = new mongoose.Schema({
-  _id: { type: mongoose.Schema.Types.ObjectId, default: new mongoose.Types.ObjectId() },
-  work_start_date: { type: Date, default: Date.now() },
-  work_end_date: { type: Date, default: Date.now() },
-  work_hours_this_year: { type: Number, default: 0 },
-  TotalHours: { type: Number, default: 0 },
+  _id: { type: mongoose.Schema.Types.ObjectId, default: () => new mongoose.Types.ObjectId() },
+  started: { type: Date, default: Date.now() },
+  ended: { type: Date, default: Date.now() },
+  hoursThisYear: { type: Number, default: 0 },
+  hoursTotal: { type: Number, default: 0 },
   _Owner: { type: String, required: true },
   links: {
     type: [{

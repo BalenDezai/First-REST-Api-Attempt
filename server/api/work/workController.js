@@ -13,6 +13,10 @@ module.exports = class WorkController {
 
   static async updateWorkById(req, res, next) {
     try {
+      //  performance might be worse than other options
+      //  TODO: reconsider
+      delete req.body._id;
+      delete req.body._Owner;
       const updatedWork = await Work
         .findOneAndUpdate({ _Owner: req.params.id }, { $set: req.body }, { new: true });
       updatedWork.SetUpHyperLinks(req.headers.host, req.originalUrl);

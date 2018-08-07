@@ -1,4 +1,5 @@
 const { body } = require('express-validator/check');
+const User = require('../../api/user/userModel');
 
 exports.registrationFields = [
   body('username')
@@ -25,7 +26,19 @@ exports.registrationFields = [
 
 exports.signinFields = [
   body('username')
+    .exists().withMessage('username must not be empty')
+    .isString().withMessage('username must be a string'),
+
+
+  body('password')
+    .exists().withMessage('password must not be empty')
+    .isString().withMessage('password must be a string'),
+];
+
+exports.updateFields = [
+  body('username')
     .isString().withMessage('username must be a string')
+    .withMessage('username already exists')
     .optional(),
 
   body('email')

@@ -5,8 +5,10 @@ const verifyRole = require('../../middleware/authMIddleware/verifyRole');
 const validateFields = require('../../middleware/validationMiddleware/employeeControllerValidation');
 const validationErrorHandler = require('../../middleware/validationMiddleware/validationErrorHandler');
 
+employeeRouter.param('id', EmployeeController.idValidParam);
+
 employeeRouter.route('/')
-  .get(EmployeeController.GetAllEmployees)
+  .get(EmployeeController.getAllEmployees)
   .post(verifyRole(), validateFields.createFields, validationErrorHandler(), EmployeeController.createEmployee)
   .patch(MessageService(405, 'Use /employees/id to update specific resource'))
   .delete(MessageService(405, 'Use /employees/id to delete specific resource'));

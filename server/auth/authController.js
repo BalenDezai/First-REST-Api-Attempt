@@ -6,8 +6,10 @@ const config = require('../config/config');
 module.exports = class AuthController {
   static async registerUser(req, res, next) {
     try {
-      const foundUser = await User.findOne({ username: req.body.username });
-      const foundEmail = await User.findOne({ email: req.body.email });
+      const [foundUser, foundEmail] = await Promise.all([
+        User.findOne({ username: req.body.username }).lean(),
+        User.findOne({ email: req.body.email }).lean(),
+      ]);
       if (foundUser) {
         return res.status(409).json({
           status: 409,
@@ -34,8 +36,6 @@ module.exports = class AuthController {
         message: 'User successfully created',
       });
     } catch (error) {
-      error.status = 500;
-      error.resMessage = 'Error creating user';
       return next(error);
     }
   }
@@ -50,22 +50,38 @@ module.exports = class AuthController {
         token,
       });
     } catch (error) {
-      error.status = 500;
-      error.resMessage = 'Error signing in user';
       return next(error);
     }
   }
 
   static async updateCurrentUser(req, res, next) {
     try {
+      //  delete performance might be worse than other options
+      //  TODO: reconsider
+      delete req.body._id;
+
+      const [foundUser, foundEmail] = await Promise.all([
+        User.findOne({ username: req.body.username }).lean(),
+        User.findOne({ email: req.body.email }).lean(),
+      ]);
+      if (foundUser) {
+        return res.status(409).json({
+          status: 409,
+          message: 'Username already exists',
+        });
+      }
+      if (foundEmail) {
+        return res.status(409).json({
+          status: 409,
+          message: 'Email already exists',
+        });
+      }
       const updatedUser = await User
-        .findOneAndUpdate({ _id: req.user._id }, { $set: req.body }, { new: true, fields: 'username email links' });
+        .findOneAndUpdate({ _id: req.user._id }, { $set: req.body }, { new: true, fields: 'username email role links' });
       updatedUser.SetUpHyperLinks(req.headers.host, req.originalUrl);
-      res.status(200).json(updatedUser);
+      return res.status(200).json(updatedUser);
     } catch (error) {
-      error.status = 500;
-      error.message = 'Error processing the request';
-      next(error);
+      return next(error);
     }
   }
 
@@ -78,8 +94,6 @@ module.exports = class AuthController {
       await User.findOneAndRemove({ _id: req.user._id });
       res.status(200).json({ status: 200, message: 'Successfully deleted user' });
     } catch (error) {
-      error.status = 500;
-      error.message = 'Error processing the request';
       next(error);
     }
   }

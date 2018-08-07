@@ -1,6 +1,18 @@
 const Schedule = require('./scheduleModel');
+const { isValid } = require('mongoose').Types.ObjectId;
 
 module.exports = class ScheduleController {
+  static scheduleidValidParam(req, res, next) {
+    //  make sure user put req.params.id is avalid mongoose object
+    if (!isValid(req.params.id)) {
+      const error = new Error();
+      error.status = 404;
+      error.resMessage = 'Invalid schedule ID';
+      next(error);
+    }
+    next();
+  }
+
   static async getAllSchedules(req, res, next) {
     try {
       const foundSchedule = await Schedule.find({ _Owner: req.params.id });
@@ -50,6 +62,9 @@ module.exports = class ScheduleController {
 
   static async updatedScheduleById(req, res, next) {
     try {
+      //  performance might be worse than other options
+      //  TODO: reconsider
+      delete req.body._id;
       const updatedSchedule = await Schedule
         .findOneAndUpdate({ _id: req.params.scheduleId }, { $set: req.body }, { new: true });
       updatedSchedule.SetUpHyperLinks(req.headers.host, req.originalUrl);

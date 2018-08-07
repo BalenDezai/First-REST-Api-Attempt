@@ -91,31 +91,46 @@ for (let index = 0; index < 20; index += 1) {
 }
 
 module.exports = async function SeedDB() {
-  try {
-    await Employee.remove();
-    await Job.remove();
-    await Schedule.remove();
-    await Wallet.remove();
-    await Work.remove();
-    await User.remove();
-
-    await User.create(users);
-    await Employee.create(employees);
-    await Job.create(jobs);
-    await Schedule.create(schedules);
-    await Wallet.create(wallets);
-    await Work.create(works);
-    await User.create({
+  const deleteAll = [
+    Employee.remove(),
+    Job.remove(),
+    Schedule.remove(),
+    Wallet.remove(),
+    Work.remove(),
+    User.remove(),
+  ];
+  const createalll = [
+    User.create(users),
+    Employee.create(employees),
+    Job.create(jobs),
+    Schedule.create(schedules),
+    Wallet.create(wallets),
+    Work.create(works),
+    User.create({
       _id: new mongoose.Types.ObjectId(),
       username: 'test',
       email: faker.internet.email(),
       role: 'Master administrator',
       password: 'test',
       links: [],
+    }),
+  ];
+
+  await Promise
+    .all(deleteAll)
+    .then(() => {
+      logger.log('Deleted all records in DB', 'info', true);
+    })
+    .catch((error) => {
+      logger.log(error, 'error');
     });
 
-    logger.log('Removed and seeded DB', 'info', true);
-  } catch (error) {
-    logger.log(error, 'error');
-  }
+  await Promise
+    .all(createalll)
+    .then(() => {
+      logger.log('Seeded DB', 'info', true);
+    })
+    .catch((error) => {
+      logger.log(error, 'error');
+    });
 };

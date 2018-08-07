@@ -19,9 +19,6 @@ exports.createFields = [
 ];
 
 exports.updateFields = [
-  body('_id')
-    .isEmpty().withMessage('_id must be empty'),
-
   body('start')
     .isISO8601().withMessage('start must be a valid ISO date format')
     .optional(),
@@ -31,10 +28,10 @@ exports.updateFields = [
     .optional(),
 
   body('holiday')
-    .isBoolean()
+    .isBoolean().withMessage('holiday must be a boolean')
     .optional(),
 
   body('weekend')
-    .isBoolean()
+    .isBoolean().withMessage('weekend must be a boolean')
     .optional(),
 ];

@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs');
 const hlGenerator = require('../../util/HyperMediaLinksGenerator');
 
 const userSchema = new mongoose.Schema({
-  _id: { type: mongoose.Schema.Types.ObjectId, default: new mongoose.Types.ObjectId() },
+  _id: { type: mongoose.Schema.Types.ObjectId, default: () => new mongoose.Types.ObjectId() },
   username: { type: String, required: true, unique: true },
   email: {
     type: String,

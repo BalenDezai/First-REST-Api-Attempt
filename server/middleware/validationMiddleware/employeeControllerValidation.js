@@ -70,14 +70,9 @@ exports.createFields = [
       return false;
     })
     .withMessage('startDate is not a valid format'),
-  body('lastChanged')
-    .isEmpty().withMessage('lastChanged must be left empty'),
 ];
 
 exports.updateFields = [
-  body('_id')
-    .isEmpty().withMessage('_id must be empty'),
-
   body('firstName')
     .isString().withMessage('firstName must be a string')
     .optional(),
@@ -86,7 +81,7 @@ exports.updateFields = [
     .isString('lastName must be a string')
     .optional(),
 
-  body('birthday', 'Must specify a valid birthday')
+  body('birthday')
     .custom((birthday) => {
       const birthDate = moment(birthday, 'YYYY/MM/DD', true);
       if (birthDate.isValid()) {
@@ -126,9 +121,6 @@ exports.updateFields = [
     .isString().withMessage('city must be a string')
     .optional(),
 
-  body('user')
-    .isEmpty().withMessage('user must be empty'),
-
   body('country')
     .isString().withMessage('country must be a string')
     .optional(),
@@ -152,7 +144,4 @@ exports.updateFields = [
     })
     .withMessage('startDate is not a valid format')
     .optional(),
-
-  body('lastChanged')
-    .isEmpty().withMessage('lastChanged must be empty'),
 ];

@@ -2,11 +2,11 @@ const mongoose = require('mongoose');
 const hlGenerator = require('../../util/HyperMediaLinksGenerator');
 
 const walletSchema = new mongoose.Schema({
-  _id: { type: mongoose.Schema.Types.ObjectId, default: new mongoose.Types.ObjectId() },
+  _id: { type: mongoose.Schema.Types.ObjectId, default: () => new mongoose.Types.ObjectId() },
   salary: { type: Number, default: 0 },
   wage: { type: String, enum: ['Monthly', 'Hourly'], default: 'Hourly' },
   _Owner: { type: String, required: true },
-  lastChanged: { type: Date, default: Date.now },
+  lastChanged: { type: Date, default: () => Date.now },
   links: {
     type: [{
       _id: false,

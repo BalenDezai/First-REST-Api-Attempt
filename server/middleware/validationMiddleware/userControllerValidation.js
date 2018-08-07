@@ -1,21 +1,48 @@
 const { body } = require('express-validator/check');
 
 exports.createFields = [
-  body('username', 'Must specify a valid username').exists().isString(),
-  body('email', 'Must specify a valid email').exists().isString().isEmail(),
-  body('role', 'Must specify a valid role').isString().custom((value) => {
-    const check = ['employee', 'administrator', 'master administrator'];
-    return check.includes(value.toLowerCase());
-  }),
-  body('password', 'Must specify a valid string').exists().isString(),
+  body('username')
+    .exists().withMessage('username must not be empty')
+    .isString().withMessage('username must be a string'),
+
+  body('email')
+    .exists().withMessage('email must not be empty')
+    .isString().withMessage('email mus be a string')
+    .isEmail().withMessage('email must be a valid email'),
+
+  body('role', 'Must specify a valid role')
+    .isString().withMessage('role must be a string')
+    .custom((value) => {
+      const check = ['employee', 'administrator', 'master administrator'];
+      return check.includes(value.toLowerCase());
+    })
+    .withMessage('role must be a valid role'),
+
+  body('password', 'Must specify a valid string')
+    .exists().withMessage('password must not be empty')
+    .isString().withMessage('password must be a string'),
 ];
 
 exports.updateFields = [
-  body('username', 'Must specify a valid username').isString(),
-  body('email', 'Must specify a valid email').isString().isEmail(),
-  body('role', 'Must specify a valid role').isString().custom((value) => {
-    const check = ['employee', 'administrator', 'master administrator'];
-    return check.includes(value.toLowerCase());
-  }),
-  body('password', 'Must specify a valid string').isString(),
+  body('username')
+    .isString().withMessage('username must be a string')
+    .optional(),
+
+  body('email')
+    .isString().withMessage('email mus be a string')
+    .isEmail().withMessage('email must be a valid email')
+    .optional(),
+
+  body('role')
+    .isString().withMessage('role must be a string')
+    .custom((value) => {
+      const check = ['employee', 'administrator', 'master administrator'];
+      return check.includes(value.toLowerCase());
+    })
+    .withMessage('role must be a valid role')
+    .optional(),
+
+  body('password')
+    .isString().withMessage('password must be a string')
+    .optional(),
 ];

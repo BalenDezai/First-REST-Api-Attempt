@@ -1,9 +1,21 @@
 const User = require('./userModel');
+const { isValid } = require('mongoose').Types.ObjectId;
 
 module.exports = class UserController {
+  static idValidParam(req, res, next) {
+    //  make sure user put req.params.id is avalid mongoose object
+    if (!isValid(req.params.id)) {
+      const error = new Error();
+      error.status = 404;
+      error.resMessage = 'Invalid ID';
+      next(error);
+    }
+    next();
+  }
+
   static async getAllUsers(req, res, next) {
     try {
-      const foundUsers = await User.find({}, 'username email links employee');
+      const foundUsers = await User.find(req.query, 'username email links employee');
       const documents = {
         count: foundUsers.length,
         users: foundUsers,
@@ -23,7 +35,7 @@ module.exports = class UserController {
 
   static async getOneUser(req, res, next) {
     try {
-      const foundUser = await User.findOne({ _id: req.params.id }, 'username email links employee').populate('employee', 'firstName lastName email phoneNumber links');
+      const foundUser = await User.findOne({ _id: req.params.id }, 'username email links role employee').populate('employee', 'firstName lastName email phoneNumber links');
       foundUser.SetUpHyperLinks(req.headers.host, req.originalUrl);
       foundUser.employee.SetUpHyperLinks(req.headers.host, '/api/v1/employees/');
       res.status(200).json(foundUser);
@@ -34,8 +46,10 @@ module.exports = class UserController {
 
   static async createOneUser(req, res, next) {
     try {
-      const foundUser = await User.findOne({ username: req.body.username });
-      const foundEmail = await User.findOne({ email: req.body.email });
+      const [foundUser, foundEmail] = Promise.all([
+        User.findOne({ username: req.body.username }).lean(),
+        User.findOne({ email: req.body.email }).lean(),
+      ]);
       if (foundUser) {
         return res.status(409).json({
           status: 409,
@@ -65,8 +79,11 @@ module.exports = class UserController {
 
   static async updateOneUser(req, res, next) {
     try {
+      //  performance might be worse than other options
+      //  TODO: reconsider
+      delete req.body._id;
       const updatedUser = await User
-        .findOneAndUpdate({ _id: req.params.id }, { $set: req.body }, { new: true, fields: 'username email links' });
+        .findOneAndUpdate({ _id: req.params.id }, { $set: req.body }, { new: true, fields: 'username email role links' });
       updatedUser.SetUpHyperLinks(req.headers.host, req.originalUrl);
       res.status(200).json(updatedUser);
     } catch (error) {

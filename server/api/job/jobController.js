@@ -13,6 +13,9 @@ module.exports = class JobController {
 
   static async updateJobById(req, res, next) {
     try {
+      //  performance might be worse than other options
+      //  TODO: reconsider
+      delete req.body._id;
       const updatedJob = await Job
         .findOneAndUpdate({ _Owner: req.params.id }, { $set: req.body }, { new: true });
       updatedJob.SetUpHyperLinks(req.headers.host, req.originalUrl);
