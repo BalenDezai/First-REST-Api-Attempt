@@ -1,6 +1,6 @@
 function verifyRole() {
   return async (req, res, next) => {
-    if (req.user.role === 'Master Administrator') {
+    if (req.user.role === 'Master administrator') {
       return next();
     } else if (req.user.role === 'Administrative') {
       return next();

@@ -6,7 +6,7 @@ const connectionString = `mongodb://${config.db.host}:${config.db.port}/${config
 
 module.exports = function StartDb() {
   try {
-    mongoose.connect(connectionString);
+    mongoose.connect(connectionString, { useNewUrlParser: true });
   } catch (error) {
     logger.log(error, 'error');
   }

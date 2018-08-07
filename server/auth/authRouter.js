@@ -1,22 +1,23 @@
 const authRouter = require('express').Router();
-const authController = require('./authController');
+const AuthController = require('./authController');
 const verifyUser = require('../middleware/authMIddleware/verifyUser');
-const verifyFields = require('../middleware/authMIddleware/verifyFields');
 const verifyToken = require('../middleware/authMIddleware/verifyToken');
 const getFullUser = require('../middleware/authMIddleware/getFullUser');
+const validateFields = require('../middleware/validationMiddleware/authControllerValidation');
+const validationErrorHandler = require('../middleware/validationMiddleware/validationErrorHandler');
 
 const verifyTokenAndGetUser = [verifyToken(), getFullUser()];
 
 authRouter.route('/signup')
-  .post(verifyFields(), authController.registerUser);
+  .post(validateFields.registrationFields, validationErrorHandler(), AuthController.registerUser);
 
 authRouter.route('/signin')
-  .post(verifyUser(), authController.signinUser);
+  .post(validateFields.signinFields, validationErrorHandler(), verifyUser(), AuthController.signinUser);
 
 authRouter.route('/me')
   .all(verifyTokenAndGetUser)
-  .get(authController.viewCurrentUserUser)
-  .patch(authController.updateCurrentUser)
-  .delete(authController.deleteCurrentUser);
+  .get(AuthController.viewCurrentUserUser)
+  .patch(validateFields.updateFields, validationErrorHandler(), AuthController.updateCurrentUser)
+  .delete(AuthController.deleteCurrentUser);
 
 module.exports = authRouter;

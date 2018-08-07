@@ -1,7 +1,19 @@
 const Schedule = require('./scheduleModel');
+const { isValid } = require('mongoose').Types.ObjectId;
 
-const scheduleController = {
-  FindResource: async (req, res, next) => {
+module.exports = class ScheduleController {
+  static scheduleidValidParam(req, res, next) {
+    //  make sure user put req.params.id is avalid mongoose object
+    if (!isValid(req.params.id)) {
+      const error = new Error();
+      error.status = 404;
+      error.resMessage = 'Invalid schedule ID';
+      next(error);
+    }
+    next();
+  }
+
+  static async getAllSchedules(req, res, next) {
     try {
       const foundSchedule = await Schedule.find({ _Owner: req.params.id });
       const documents = {
@@ -19,9 +31,9 @@ const scheduleController = {
     } catch (error) {
       next(error);
     }
-  },
+  }
 
-  findResourceById: async (req, res, next) => {
+  static async getScheduleById(req, res, next) {
     try {
       const foundSchedule = await Schedule.findOne({ _id: req.params.scheduleId });
       foundSchedule.SetUpHyperLinks(req.headers.host, req.originalUrl);
@@ -29,17 +41,16 @@ const scheduleController = {
     } catch (error) {
       next(error);
     }
-  },
+  }
 
-  CreateResource: async (req, res, next) => {
+  static async createSchedule(req, res, next) {
     try {
       const newSchedule = {
-        _Owner: req.body._Owner || req.params.id,
-        work_date: req.body.work_date,
-        start_work_hour: req.body.start_work_hour,
-        end_work_hour: req.body.end_work_hour,
-        is_holiday: req.body.is_holiday,
-        is_weekend: req.body._is_weekend,
+        _Owner: req.params.id,
+        start: req.body.start,
+        end: req.body.end,
+        holiday: req.body.holiday,
+        weekend: req.body.weekend,
       };
       const createdSchedule = await Schedule.create(newSchedule);
       createdSchedule.SetUpHyperLinks(req.headers.host, req.originalUrl);
@@ -47,10 +58,13 @@ const scheduleController = {
     } catch (error) {
       next(error);
     }
-  },
+  }
 
-  UpdateResource: async (req, res, next) => {
+  static async updatedScheduleById(req, res, next) {
     try {
+      //  performance might be worse than other options
+      //  TODO: reconsider
+      delete req.body._id;
       const updatedSchedule = await Schedule
         .findOneAndUpdate({ _id: req.params.scheduleId }, { $set: req.body }, { new: true });
       updatedSchedule.SetUpHyperLinks(req.headers.host, req.originalUrl);
@@ -58,16 +72,14 @@ const scheduleController = {
     } catch (error) {
       next(error);
     }
-  },
+  }
 
-  DeleteResource: async (req, res, next) => {
+  static async deleteScheduleById(req, res, next) {
     try {
       await Schedule.findOneAndRemove({ _id: req.params.scheduleId });
       res.status(200).json({ status: 200, message: 'Successfully deleted schedule' });
     } catch (error) {
       next(error);
     }
-  },
+  }
 };
-
-module.exports = scheduleController;

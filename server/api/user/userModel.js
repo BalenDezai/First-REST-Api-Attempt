@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs');
 const hlGenerator = require('../../util/HyperMediaLinksGenerator');
 
 const userSchema = new mongoose.Schema({
-  _id: { type: mongoose.Schema.Types.ObjectId, default: new mongoose.Types.ObjectId() },
+  _id: { type: mongoose.Schema.Types.ObjectId, default: () => new mongoose.Types.ObjectId() },
   username: { type: String, required: true, unique: true },
   email: {
     type: String,
@@ -11,7 +11,7 @@ const userSchema = new mongoose.Schema({
     unique: true,
     match: /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/,
   },
-  role: { type: String, enum: ['Master Administrator', 'Administrative', 'Employee'], default: 'Employee' },
+  role: { type: String, enum: ['Master administrator', 'Administrative', 'Employee'], default: 'Employee' },
   employee: { type: mongoose.Schema.Types.ObjectId, ref: 'Employee' },
   password: { type: String, required: true },
   links: [{

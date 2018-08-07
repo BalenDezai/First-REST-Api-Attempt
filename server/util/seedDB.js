@@ -8,6 +8,7 @@ const User = require('../api/user/userModel');
 const Schedule = require('../api/schedule/scheduleModel');
 const logger = require('./loggerWrapper');
 
+const users = [];
 const employees = [];
 const jobs = [];
 const schedules = [];
@@ -16,14 +17,27 @@ const works = [];
 
 
 for (let index = 0; index < 20; index += 1) {
-  const employee = {
+
+  const empId = new mongoose.Types.ObjectId();
+
+  const user = {
     _id: new mongoose.Types.ObjectId(),
+    username: `${faker.random.word()}${faker.name.firstName()}`,
+    email: faker.internet.email(),
+    role: faker.random.arrayElement(['Master administrator', 'Administrative', 'Employee']),
+    employee: empId,
+    password: faker.random.word(),
+  };
+
+  const employee = {
+    _id: empId,
     firstName: faker.name.firstName(),
     lastName: faker.name.lastName(),
     email: faker.internet.email(),
     birthday: faker.date.past(),
     city: faker.address.city(),
     country: faker.address.country(),
+    user: user._id,
     street: faker.address.streetAddress(),
     phoneNumber: faker.phone.phoneNumber(),
     startDate: faker.date.past(),
@@ -41,19 +55,17 @@ for (let index = 0; index < 20; index += 1) {
   const schedule = {
     _id: new mongoose.Types.ObjectId(),
     _Owner: employee._id,
-    work_date: faker.date.future(),
-    start_work_hour: faker.date.future(),
-    end_work_hour: faker.date.future(),
-    is_holiday: faker.random.boolean(),
-    is_weekend: faker.random.boolean(),
+    start: faker.date.future(),
+    end: faker.date.future(),
+    holiday: faker.random.boolean(),
+    weekend: faker.random.boolean(),
     links: [],
   };
 
   const wallet = {
     _id: new mongoose.Types.ObjectId(),
-    wage: faker.finance.amount(),
+    wage: faker.random.arrayElement(['Monthly', 'Hourly']),
     salary: faker.finance.amount(),
-    paymentMethod: faker.random.arrayElement(['Monthly', 'Hourly']),
     _Owner: employee._id,
     lastChanged: faker.date.past(),
     links: [],
@@ -69,6 +81,8 @@ for (let index = 0; index < 20; index += 1) {
     links: [],
   };
 
+
+  users.push(user);
   employees.push(employee);
   jobs.push(job);
   schedules.push(schedule);
@@ -77,30 +91,46 @@ for (let index = 0; index < 20; index += 1) {
 }
 
 module.exports = async function SeedDB() {
-  try {
-    await Employee.remove();
-    await Job.remove();
-    await Schedule.remove();
-    await Wallet.remove();
-    await Work.remove();
-    await User.remove();
-
-    await Employee.create(employees);
-    await Job.create(jobs);
-    await Schedule.create(schedules);
-    await Wallet.create(wallets);
-    await Work.create(works);
-    await User.create({
+  const deleteAll = [
+    Employee.remove(),
+    Job.remove(),
+    Schedule.remove(),
+    Wallet.remove(),
+    Work.remove(),
+    User.remove(),
+  ];
+  const createalll = [
+    User.create(users),
+    Employee.create(employees),
+    Job.create(jobs),
+    Schedule.create(schedules),
+    Wallet.create(wallets),
+    Work.create(works),
+    User.create({
       _id: new mongoose.Types.ObjectId(),
       username: 'test',
-      email: employees[0].email,
-      role: 'Master Administrator',
+      email: faker.internet.email(),
+      role: 'Master administrator',
       password: 'test',
       links: [],
+    }),
+  ];
+
+  await Promise
+    .all(deleteAll)
+    .then(() => {
+      logger.log('Deleted all records in DB', 'info', true);
+    })
+    .catch((error) => {
+      logger.log(error, 'error');
     });
 
-    logger.log('Removed and seeded DB', 'info', true);
-  } catch (error) {
-    logger.log(error, 'error');
-  }
+  await Promise
+    .all(createalll)
+    .then(() => {
+      logger.log('Seeded DB', 'info', true);
+    })
+    .catch((error) => {
+      logger.log(error, 'error');
+    });
 };
