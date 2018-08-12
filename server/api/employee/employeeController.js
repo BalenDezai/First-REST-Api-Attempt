@@ -26,8 +26,14 @@ module.exports = class EmployeeController {
         employees: foundEmployees,
       };
       if (documents.count > 0) {
+        let isQueryString;
+        if (Object.keys(req.query).length > 0) {
+          isQueryString = true;
+        } else {
+          isQueryString = false;
+        }
         for (let i = 0; i < foundEmployees.length; i += 1) {
-          foundEmployees[i].SetUpHyperLinks(req.headers.host, req.originalUrl);
+          foundEmployees[i].SetUpHyperLinks(req.headers.host, req.originalUrl, { queryString: isQueryString });
         }
         res.status(200).json(documents);
       } else {
@@ -41,7 +47,7 @@ module.exports = class EmployeeController {
   static async getEmployeeById(req, res, next) {
     try {
       const foundEmployee = await Employee.findOne({ _id: req.params.id }).populate('user', 'username email links');
-      foundEmployee.SetUpHyperLinks(req.headers.host, req.originalUrl, true);
+      foundEmployee.SetUpHyperLinks(req.headers.host, req.originalUrl, { removeAfterSlash: 1 });
       foundEmployee.user.SetUpHyperLinks(req.headers.host, '/api/v1/users/');
       res.status(200).json(foundEmployee);
     } catch (error) {
@@ -59,22 +65,18 @@ module.exports = class EmployeeController {
         email: req.body.email,
         city: req.body.city,
         country: req.body.country,
+        user: {
+          _id: new mongoose.Types.ObjectId(),
+          username: req.body.user.username || `${req.body.firstName.substring(0, 2)}${req.body.lastName.substring(0, 2)}`,
+          email: req.body.email,
+          role: req.body.user.role,
+          password: req.body.user.password || await crypto.randomBytes(12).toString('hex'),
+        },
         street: req.body.country,
         phoneNumber: req.body.phoneNumber,
         startDate: req.body.startDate,
       };
-      const username = `${req.body.firstName.substring(0, 2)}${req.body.lastName.substring(0, 2)}`;
-      const password = await crypto.randomBytes(12);
-      const newUser = {
-        _id: new mongoose.Types.ObjectId(),
-        username,
-        email: newEmployee.email,
-        employee: newEmployee._id,
-        password: password.toString('hex'),
-      };
-      newEmployee.user = newUser._id;
       const createdEmployee = await Employee.create(newEmployee);
-      createdEmployee.SetUpHyperLinks(req.headers.host, req.originalUrl);
       await Job.create({
         _Owner: createdEmployee._id,
       });
@@ -84,7 +86,10 @@ module.exports = class EmployeeController {
       await Work.create({
         _Owner: createdEmployee._id,
       });
-      await User.create(newUser);
+      await User.create(newEmployee.user);
+      await Employee.populate(createdEmployee, { path: 'user', select: 'username role links' });
+      createdEmployee.user.SetUpHyperLinks(req.headers.host, '/api/v1/users/');
+      createdEmployee.SetUpHyperLinks(req.headers.host, req.originalUrl);
       res.status(201).json(createdEmployee);
     } catch (error) {
       next(error);
@@ -97,7 +102,6 @@ module.exports = class EmployeeController {
       //  TODO: reconsider
       delete req.body._id;
       delete req.body.user;
-      delete req.body.lastChanged;
       req.body.lastChanged = new Date();
       const updatedEmployee = await Employee
         .findOneAndUpdate({ _id: req.params.id }, { $set: req.body }, { new: true });

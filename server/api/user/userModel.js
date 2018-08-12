@@ -33,6 +33,20 @@ userSchema.pre('save', async function hashPassword(next) {
   }
 });
 
+userSchema.pre('findOneAndUpdate', async function hashOnUpdate(next) {
+  const { password } = this.getUpdate().$set;
+  if (!password) {
+    next();
+  }
+  try {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    this.getUpdate().$set.password = hashedPassword;
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
+
 userSchema.methods = {
   authenticate: async function authenticateUser(plainTextPassword) {
     const authenticated = await bcrypt.compare(plainTextPassword, this.password);

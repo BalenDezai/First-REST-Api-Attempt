@@ -6,7 +6,7 @@ const walletSchema = new mongoose.Schema({
   salary: { type: Number, default: 0 },
   wage: { type: String, enum: ['Monthly', 'Hourly'], default: 'Hourly' },
   _Owner: { type: String, required: true },
-  lastChanged: { type: Date, default: () => Date.now },
+  lastChanged: { type: Date, default: () => new Date() },
   links: {
     type: [{
       _id: false,

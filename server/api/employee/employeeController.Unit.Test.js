@@ -35,7 +35,7 @@ describe('employeeController Unit Tests', () => {
         links: [],
         SetUpHyperLinks: () => null,
       }]);
-      await employeeController.GetAllEmployees(req, res, (error) => { throw error; });
+      await employeeController.getAllEmployees(req, res, (error) => { throw error; });
     });
     after(() => {
       Employee.find.restore();

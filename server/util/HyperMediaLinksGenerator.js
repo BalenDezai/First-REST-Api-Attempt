@@ -60,10 +60,29 @@ function removeTrailingSlashes(url) {
   return url;
 }
 
-function hateoasGenerator(record, hostName, url, endPoints, isChild) {
+function removeQueryString(url) {
+  return url.substring(0, url.lastIndexOf('?'));
+}
+
+function removeEverythingAfterSlash(url, amountOfSlashes) {
+  let newUrl;
+  for (let i = 0; i < amountOfSlashes; i += 1) {
+    newUrl = url.substring(0, url.lastIndexOf('/'));
+  }
+  return newUrl;
+}
+
+function hateoasGenerator(record, hostName, url, endPoints, opts) {
   //  replace the double forward slash with one for link generator
-  const newUrl = removeTrailingSlashes(url);
-  if (isChild) {
+  const options = opts || {};
+  let newUrl = removeTrailingSlashes(url);
+  if (options.queryString) {
+    newUrl = removeQueryString(newUrl);
+  }
+  if (options.removeAfterSlash && options.removeAfterSlash > 0) {
+    newUrl = removeEverythingAfterSlash(newUrl, options.removeAfterSlash);
+  }
+  if (options.isChild) {
     generateChildLinks(record, hostName, url, endPoints);
   } else {
     generateLinks(record, hostName, newUrl, endPoints);

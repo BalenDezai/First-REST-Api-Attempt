@@ -3,6 +3,7 @@ const logger = require('./loggerWrapper');
 function handleError() {
   return (error, req, res, next) => {
     logger.log(error, 'error');
+    console.log(error);
     const status = error.status || 500;
     const resMessage = error.resMessage || 'Error proccessing the request';
     if (error.name === 'UnauthorizedError') {

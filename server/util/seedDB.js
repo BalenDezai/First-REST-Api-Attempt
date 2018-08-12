@@ -17,7 +17,6 @@ const works = [];
 
 
 for (let index = 0; index < 20; index += 1) {
-
   const empId = new mongoose.Types.ObjectId();
 
   const user = {
@@ -90,8 +89,8 @@ for (let index = 0; index < 20; index += 1) {
   works.push(work);
 }
 
-module.exports = async function SeedDB() {
-  const deleteAll = [
+async function deleteAll() {
+  const deleteAllFunctions = [
     Employee.remove(),
     Job.remove(),
     Schedule.remove(),
@@ -99,7 +98,17 @@ module.exports = async function SeedDB() {
     Work.remove(),
     User.remove(),
   ];
-  const createalll = [
+
+  return new Promise((resolve, reject) => {
+    Promise
+      .all(deleteAllFunctions)
+      .then(resolve)
+      .catch(reject);
+  });
+}
+
+async function seedAll() {
+  const createalllFunctions = [
     User.create(users),
     Employee.create(employees),
     Job.create(jobs),
@@ -115,22 +124,15 @@ module.exports = async function SeedDB() {
       links: [],
     }),
   ];
+  return new Promise((resolve, reject) => {
+    Promise
+      .all(createalllFunctions)
+      .then(resolve)
+      .catch(reject);
+  });
+}
 
-  await Promise
-    .all(deleteAll)
-    .then(() => {
-      logger.log('Deleted all records in DB', 'info', true);
-    })
-    .catch((error) => {
-      logger.log(error, 'error');
-    });
-
-  await Promise
-    .all(createalll)
-    .then(() => {
-      logger.log('Seeded DB', 'info', true);
-    })
-    .catch((error) => {
-      logger.log(error, 'error');
-    });
+module.exports = async function SeedDB() {
+  await deleteAll().then(() => { logger.log('deleted all records in DB', 'info'); });
+  await seedAll().then(() => { logger.log('seeded DB', 'info'); });
 };

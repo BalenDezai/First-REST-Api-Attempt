@@ -1,5 +1,4 @@
 const { body } = require('express-validator/check');
-const User = require('../../api/user/userModel');
 
 exports.registrationFields = [
   body('username')
