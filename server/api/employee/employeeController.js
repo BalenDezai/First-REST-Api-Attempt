@@ -102,13 +102,19 @@ module.exports = class EmployeeController {
 
   static async updateEmployeeById(req, res, next) {
     try {
-      //  performance might be worse than other options
-      //  TODO: reconsider
-      delete req.body._id;
-      delete req.body.user;
+      const newBody = {};
+      const keys = Object.keys(req.body);
+      //  add evrey properti from req.body except for _id and user
+      //  to newBody  to be updated
+      //  better solution to delete operator (slow)
+      for (let i = 0; i < keys.length; i += 1) {
+        if (keys[i] !== '_id' && keys[i] !== 'user') {
+          newBody[keys[i]] = req.body[keys[i]];
+        }
+      }
       req.body.lastChanged = new Date();
       const updatedEmployee = await Employee
-        .findOneAndUpdate({ _id: req.params.id }, { $set: req.body }, { new: true });
+        .findOneAndUpdate({ _id: req.params.id }, { $set: newBody }, { new: true });
       updatedEmployee.SetUpHyperLinks(req.headers.host, req.originalUrl);
       res.status(200).json(updatedEmployee);
     } catch (error) {
