@@ -21,7 +21,7 @@ module.exports = class UserController {
         users: foundUsers,
       };
       if (documents.count > 0) {
-        for (let i = 0; i < foundUsers; i += 1) {
+        for (let i = 0; i < foundUsers.length; i += 1) {
           foundUsers[i].SetUpHyperLinks(req.headers.host, req.originalUrl);
         }
         res.status(200).json(documents);

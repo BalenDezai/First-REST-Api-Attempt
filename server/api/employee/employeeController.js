@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const crypto = require('crypto');
+const moment = require('moment');
 const Employee = require('./employeeModel');
 const Job = require('../job/jobModel');
 const Wallet = require('../wallet/walletModel');
@@ -57,11 +58,13 @@ module.exports = class EmployeeController {
 
   static async createEmployee(req, res, next) {
     try {
+      req.body.user = req.body.user || {};
+      const role = `${req.body.user.role.substring(0, 1).toUpperCase()}${req.body.user.role.substring(1, req.body.user.role.length).toLowerCase()}`;
       const newEmployee = {
         _id: new mongoose.Types.ObjectId(),
         firstName: req.body.firstName,
         lastName: req.body.lastName,
-        birthday: req.body.birthday,
+        birthday: moment(req.body.birthday, 'YYYY/MM/DD'),
         email: req.body.email,
         city: req.body.city,
         country: req.body.country,
@@ -69,12 +72,13 @@ module.exports = class EmployeeController {
           _id: new mongoose.Types.ObjectId(),
           username: req.body.user.username || `${req.body.firstName.substring(0, 2)}${req.body.lastName.substring(0, 2)}`,
           email: req.body.email,
-          role: req.body.user.role,
+          role,
           password: req.body.user.password || await crypto.randomBytes(12).toString('hex'),
         },
         street: req.body.country,
         phoneNumber: req.body.phoneNumber,
         startDate: req.body.startDate,
+        lastChanged: moment().format('YYYY/MM/DD'),
       };
       const createdEmployee = await Employee.create(newEmployee);
       await Job.create({

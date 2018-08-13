@@ -41,11 +41,15 @@ describe('employeeController Unit Tests', () => {
       Employee.find.restore();
     });
     it('should dfdfdf', () => {
-      const fifteenYearsAgo = momment().subtract(15, 'years').format();
+      const fifteenYearsAgo = Date.parse('2015/07/23') //momment().subtract(15, 'years').format();
+      const Tests = Date.parse('dfdf')
       const now = momment('dfdsfdf', 'YYYY-MM-dd', true);
-      console.log(fifteenYearsAgo);
+      console.log(new Date(fifteenYearsAgo));
+      console.log(new Date('2015/07/23'));
+      console.log(fifteenYearsAgo instanceof Date);
+      console.log(Tests);
       console.log(now.isValid());
       // console.log(now < fifteenYearsAgo);
     });
-  })
+  });
 });
