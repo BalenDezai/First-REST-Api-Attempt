@@ -1,4 +1,6 @@
 const Wallet = require('./walletModel');
+const moment = require('moment');
+const copyObject = require('../../util/clonePropertiesToNewObject');
 
 module.exports = class WalletController {
   static async getWalletById(req, res, next) {
@@ -13,12 +15,8 @@ module.exports = class WalletController {
 
   static async updateWalletById(req, res, next) {
     try {
-      //  performance might be worse than other options
-      //  TODO: reconsider
-      delete req.body._id;
-      delete req.body._Owner;
-      delete req.body.lastChanged;
-      req.body.lastChanged  = new Date();
+      req.body = copyObject(req.body, '_id _Owner');
+      req.body.lastChanged = moment().format('YYYY/MM/DD');
       const updatedWallet = await Wallet
         .findOneAndUpdate({ _Owner: req.params.id }, { $set: req.body }, { new: true });
       updatedWallet.SetUpHyperLinks(req.headers.host, req.originalUrl);

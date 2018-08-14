@@ -1,5 +1,6 @@
 const Schedule = require('./scheduleModel');
 const { isValid } = require('mongoose').Types.ObjectId;
+const copyObject = require('../../util/clonePropertiesToNewObject');
 
 module.exports = class ScheduleController {
   static scheduleidValidParam(req, res, next) {
@@ -62,9 +63,7 @@ module.exports = class ScheduleController {
 
   static async updatedScheduleById(req, res, next) {
     try {
-      //  performance might be worse than other options
-      //  TODO: reconsider
-      delete req.body._id;
+      req.body = copyObject(req.body, '_id _Owner');
       const updatedSchedule = await Schedule
         .findOneAndUpdate({ _id: req.params.scheduleId }, { $set: req.body }, { new: true });
       updatedSchedule.SetUpHyperLinks(req.headers.host, req.originalUrl);

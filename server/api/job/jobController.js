@@ -1,4 +1,5 @@
 const Job = require('./jobModel');
+const copyObject = require('../../util/clonePropertiesToNewObject');
 
 module.exports = class JobController {
   static async getJobById(req, res, next) {
@@ -13,9 +14,7 @@ module.exports = class JobController {
 
   static async updateJobById(req, res, next) {
     try {
-      //  performance might be worse than other options
-      //  TODO: reconsider
-      delete req.body._id;
+      req.body = copyObject(req.body, '_id _Owner');
       const updatedJob = await Job
         .findOneAndUpdate({ _Owner: req.params.id }, { $set: req.body }, { new: true });
       updatedJob.SetUpHyperLinks(req.headers.host, req.originalUrl);

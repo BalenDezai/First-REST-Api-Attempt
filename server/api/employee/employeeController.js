@@ -6,6 +6,7 @@ const Job = require('../job/jobModel');
 const Wallet = require('../wallet/walletModel');
 const Work = require('../work/workModel');
 const User = require('../user/userModel');
+const copyObject = require('../../util/clonePropertiesToNewObject');
 
 module.exports = class EmployeeController {
   static idValidParam(req, res, next) {
@@ -102,19 +103,13 @@ module.exports = class EmployeeController {
 
   static async updateEmployeeById(req, res, next) {
     try {
-      const newBody = {};
-      const keys = Object.keys(req.body);
       //  add evrey properti from req.body except for _id and user
       //  to newBody  to be updated
       //  better solution to delete operator (slow)
-      for (let i = 0; i < keys.length; i += 1) {
-        if (keys[i] !== '_id' && keys[i] !== 'user') {
-          newBody[keys[i]] = req.body[keys[i]];
-        }
-      }
-      req.body.lastChanged = new Date();
+      req.body = copyObject(req.body, '_id user');
+      req.body.lastChanged = moment().format('YYYY/MM/DD');
       const updatedEmployee = await Employee
-        .findOneAndUpdate({ _id: req.params.id }, { $set: newBody }, { new: true });
+        .findOneAndUpdate({ _id: req.params.id }, { $set: req.body }, { new: true });
       updatedEmployee.SetUpHyperLinks(req.headers.host, req.originalUrl);
       res.status(200).json(updatedEmployee);
     } catch (error) {

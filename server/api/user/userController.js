@@ -1,5 +1,6 @@
 const User = require('./userModel');
 const { isValid } = require('mongoose').Types.ObjectId;
+const copyObject = require('../../util/clonePropertiesToNewObject');
 
 module.exports = class UserController {
   static idValidParam(req, res, next) {
@@ -79,9 +80,7 @@ module.exports = class UserController {
 
   static async updateOneUser(req, res, next) {
     try {
-      //  performance might be worse than other options
-      //  TODO: reconsider
-      delete req.body._id;
+      req.body = copyObject(req.body, '_id employee');
       const updatedUser = await User
         .findOneAndUpdate({ _id: req.params.id }, { $set: req.body }, { new: true, fields: 'username email role links' });
       updatedUser.SetUpHyperLinks(req.headers.host, req.originalUrl);
