@@ -8,4 +8,3 @@ const server = http.createServer(app);
 
 server.listen(config.app.port);
 logger.log(`server started on port ${config.app.port}`, 'info', true);
-
