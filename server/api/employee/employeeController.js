@@ -8,7 +8,8 @@ const {
   createEmployee,
   deleteEmployeeById,
   populate,
-  copyObjectAndAddLastChanged
+  copyObjectAndAddLastChanged,
+  updateEmployeeById,
 } = require('./employeeService');
 
 module.exports = class EmployeeController {
@@ -86,18 +87,25 @@ module.exports = class EmployeeController {
     };
   }
 
-  //  TODO: FINISH THIS
-  static async updateEmployeeById(employee, id) {
+  /**
+   * updates an employee by ID with a given object
+   * @param {*} employee new object to update employee with
+   * @param {*} id id of the employee to update
+   * @param {*} host the host name portion of the requested url
+   * @param {*} originalUrl the requested url after the hostname
+   */
+  static async updateEmployeeById(employee, id, host, originalUrl) {
     const newEmployee = copyObjectAndAddLastChanged(employee, '_id user');
-    const updatedEmployee = await Employee
-      .findOneAndUpdate({ _id: req.params.id }, { $set: req.body }, { new: true });
-    updatedEmployee.SetUpHyperLinks(req.headers.host, req.originalUrl);
+    const updatedEmployee = updateEmployeeById(newEmployee, id);
+    updatedEmployee.SetUpHyperLinks(host, originalUrl);
   }
   /**
    * deletes an employee in the database
    * @param {string} id the id to delete an employee by
+   * @returns {object} returns an object with a message
    */
   static async deleteEmployeeById(id) {
     await deleteEmployeeById(id);
+    return { message: 'Successfully deleted' };
   }
 };

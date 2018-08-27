@@ -30,6 +30,18 @@ class EmployeeService {
   }
 
   /**
+   * finds an employee with given id and updates the employee with given object
+   * @param {object} obj object with properties to update
+   * @param {string} id id of the employee to update
+   * @returns a promise
+   */
+  static updateEmployeeById(obj, id) {
+    //  sets the oj property to the found employee, and returns the new verison
+    return Employee
+      .findOneAndUpdate({ _id: id }, { $set: obj }, { new: true }).exec();
+  }
+
+  /**
    * finds an employee with the given id and deletes it from the table
    * @param {string} id id to delete employee by
    */
@@ -51,6 +63,7 @@ class EmployeeService {
   /**
    * will create an employee in the database
    * @param {object} employee the employee object to create in the database
+   * @returns {Promise} a promise to be resolved
    */
   static createEmployee(employee) {
     const createAll = [
@@ -116,6 +129,11 @@ class EmployeeService {
     return false;
   }
 
+  /**
+   * takes an object and returns a new object without the excluded fields
+   * @param {object} obj object to copy
+   * @param {string} fields fields to exclude
+   */
   static copyObjectAndAddLastChanged(obj, fields) {
     //  add evrey properti from req.body except for _id and user
     //  to newBody  to be updated

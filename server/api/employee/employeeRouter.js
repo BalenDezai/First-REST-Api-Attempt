@@ -9,6 +9,7 @@ const {
   getAllEmployees,
   getEmployeeById,
   createEmployee,
+  updateEmployeeById,
   deleteEmployeeById,
 } = require('./employeeController');
 
@@ -33,7 +34,7 @@ employeeRouter.route('/:id')
     verifyRole(),
     validateFields.updateFields,
     validationErrorHandler(),
-    EmployeeController.updateEmployeeById,
+    c(updateEmployeeById, req => [req.body, req.params.id, req.headers.host, req.originalUrl]),
   )
   .delete(verifyRole(), c(deleteEmployeeById, req => [req.params.id]));
 
