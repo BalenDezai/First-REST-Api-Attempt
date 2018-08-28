@@ -1,7 +1,7 @@
 const employeeRouter = require('express').Router();
-const EmployeeController = require('./employeeController');
 const MessageService = require('../../util/MessageService');
 const c = require('../../util/controllerHandler');
+const isValidParam = require('../../util/idIsValidParam');
 const verifyRole = require('../../middleware/authMIddleware/verifyRole');
 const validateFields = require('../../middleware/validationMiddleware/employeeControllerValidation');
 const validationErrorHandler = require('../../middleware/validationMiddleware/validationErrorHandler');
@@ -14,7 +14,7 @@ const {
 } = require('./employeeController');
 
 
-employeeRouter.param('id', EmployeeController.idValidParam);
+employeeRouter.param('id', isValidParam);
 
 employeeRouter.route('/')
   .get(c(getAllEmployees, req => [req.query, req.headers.host, req.originalUrl]))

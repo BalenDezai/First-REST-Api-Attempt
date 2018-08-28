@@ -67,7 +67,6 @@ class EmployeeService {
    */
   static createEmployee(employee) {
     const createAll = [
-      Employee.create(employee),
       Job.create({
         _Owner: employee._id,
       }),
@@ -79,12 +78,10 @@ class EmployeeService {
       }),
       User.create(employee.user),
     ];
-    return new Promise((resolve, reject) => {
-      Promise
-        .all(createAll)
-        .then(resolve)
-        .catch(reject);
-    });
+    //  TODO: test if this works
+    Promise.all(createAll);
+
+    return Promise.resolve(Employee.create(employee));
   }
 
   /**
@@ -95,7 +92,13 @@ class EmployeeService {
    */
   static async createEmployeeObject(employee, user) {
     const newUser = user || {};
-    const role = `${newUser.role.substring(0, 1).toUpperCase()}${newUser.role.substring(1, newUser.role.length).toLowerCase()}`;
+    let role;
+    if (newUser.role) {
+      role = `${newUser.role.substring(0, 1).toUpperCase()}${newUser.role.substring(1, newUser.role.length).toLowerCase()}`;
+    }
+    if (!newUser.role) {
+      role = 'Employee';
+    }
     return {
       _id: new mongoose.Types.ObjectId(),
       firstName: employee.firstName,
@@ -111,9 +114,9 @@ class EmployeeService {
         role,
         password: newUser.password || await crypto.randomBytes(12).toString('hex'),
       },
-      street: employee.country,
+      street: employee.street,
       phoneNumber: employee.phoneNumber,
-      startDate: employee.startDate,
+      startDate: employee.startDate || moment().format('YYYY/MM/DD'),
       lastChanged: moment().format('YYYY/MM/DD'),
     };
   }

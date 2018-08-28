@@ -1,5 +1,3 @@
-const mongoose = require('mongoose');
-const Employee = require('./employeeModel');
 const {
   findAllEmployees,
   findEmployeeById,
@@ -13,17 +11,6 @@ const {
 } = require('./employeeService');
 
 module.exports = class EmployeeController {
-  static idValidParam(req, res, next) {
-    //  make sure user put req.params.id is avalid mongoose object
-    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-      const error = new Error();
-      error.status = 404;
-      error.resMessage = 'Invalid ID';
-      next(error);
-    }
-    next();
-  }
-
   /**
    * gets all the employees, sets up HATEOAS and returns the result
    * @param {Object} obj an object representing what the user wants
@@ -39,7 +26,6 @@ module.exports = class EmployeeController {
         employees[i].SetUpHyperLinks(host, originalUrl, { queryString: isQueryString });
       }
       return {
-        status: 200,
         result: {
           count: employees.length,
           employees,
@@ -60,10 +46,16 @@ module.exports = class EmployeeController {
    */
   static async getEmployeeById(id, host, originalUrl) {
     const foundEmployee = await findEmployeeById(id);
-    foundEmployee.SetUpHyperLinks(host, originalUrl, { removeAfterSlash: 1 });
-    foundEmployee.user.SetUpHyperLinks(host, '/api/v1/users/');
+    if (foundEmployee) {
+      foundEmployee.SetUpHyperLinks(host, originalUrl, { removeAfterSlash: 1 });
+      foundEmployee.user.SetUpHyperLinks(host, '/api/v1/users/');
+      return {
+        result: foundEmployee,
+      };
+    }
     return {
-      result: foundEmployee,
+      status: 201,
+      result: null,
     };
   }
 
@@ -96,8 +88,12 @@ module.exports = class EmployeeController {
    */
   static async updateEmployeeById(employee, id, host, originalUrl) {
     const newEmployee = copyObjectAndAddLastChanged(employee, '_id user');
-    const updatedEmployee = updateEmployeeById(newEmployee, id);
+    const updatedEmployee = await updateEmployeeById(newEmployee, id);
+    console.log(updatedEmployee);
     updatedEmployee.SetUpHyperLinks(host, originalUrl);
+    return {
+      result: updatedEmployee,
+    };
   }
   /**
    * deletes an employee in the database
@@ -106,6 +102,6 @@ module.exports = class EmployeeController {
    */
   static async deleteEmployeeById(id) {
     await deleteEmployeeById(id);
-    return { message: 'Successfully deleted' };
+    return { result: 'Successfully deleted' };
   }
 };
