@@ -6,7 +6,13 @@ const Job = require('../job/jobModel');
 const Wallet = require('../wallet/walletModel');
 const Work = require('../work/workModel');
 const User = require('../user/userModel');
-const { getAllEmployees, getEmployeeById, createEmployee } = require('./employeeController');
+const {
+  getAllEmployees,
+  getEmployeeById,
+  createEmployee,
+  updateEmployeeById,
+  deleteEmployeeById,
+} = require('./employeeController');
 
 const { expect } = chai;
 chai.use(dirtyChai);
@@ -22,14 +28,7 @@ describe('employeeController Unit Tests', () => {
           links: [],
           SetUpHyperLinks: () => null,
         }];
-        const foundemployees = db.filter(employee => employee.firstName === obj.firstName);
-        const finalVersion = {
-          foundemployees,
-          exec: function exec() {
-            return this.foundemployees;
-          },
-        };
-        return finalVersion;
+        return db.filter(employee => employee.firstName === obj.firstName);
       });
     });
     context('successfully found employee', () => {
@@ -78,9 +77,6 @@ describe('employeeController Unit Tests', () => {
         const foundEmployee = {
           found: db.filter(employee => employee._id === id._id)[0],
           populate: function populate() {
-            return this;
-          },
-          exec: function exec() {
             return this.found;
           },
         };
@@ -109,58 +105,201 @@ describe('employeeController Unit Tests', () => {
     after(() => {
       Employee.findOne.restore();
     });
-    describe('createEmployee', () => {
+  });
+  describe('updateEmployeeById', () => {
+    context('successfully updated emploeye', () => {
       before(() => {
-        sinon.stub(Job, 'create').resolves();
-        sinon.stub(Work, 'create').resolves();
-        sinon.stub(Wallet, 'create').resolves();
-        sinon.stub(User, 'create').resolves();
-        sinon.stub(Employee, 'populate').returns({ exec: function exec() { return null; } });
-      });
-      context('successfully create employee', () => {
-        before(() => {
-          sinon.stub(Employee, 'create').callsFake((employeeToCreate) => {
-            const newCreatedEmployee = employeeToCreate;
-            newCreatedEmployee.SetUpHyperLinks = () => null;
-            newCreatedEmployee.user.SetUpHyperLinks = () => null;
-            return Promise.resolve(newCreatedEmployee);
-          });
-        });
-        it('should return an object', async () => {
-          const employeeToCreate = {
-            _id: 'sdfsdfs54df4sd5f',
-            firstName: 'John',
-            lastName: 'Smith',
-            birthday: '1996/03/21',
-            email: 'JohnnyBoy@mail.com',
-            city: 'fake',
-            country: 'USA',
-            street: 'sdfsdfsdfsdf',
-            phoneNumber: '45644544',
-          }
-          const result = await createEmployee(employeeToCreate);
-          const test = await result.result;
-          console.log(result);
-          expect(result).to.be.an('object');
-        });
-        after(() => {
-          Employee.create.restore();
+        sinon.stub(Employee, 'findOneAndUpdate').callsFake((id, obj) => {
+          const newObj = obj.$set;
+          newObj.SetUpHyperLinks = () => null;
+          return newObj;
         });
       });
-      context('unsuccessfully create employee', () => {
-        before(() => {
-          sinon.stub(Employee, 'create').rejects();
-        });
-        after(() => {
-          Employee.create.restore();
-        });
+      it('should return an object with result property', async () => {
+        const employeeToUpdate = {
+          _id: '123',
+          firstName: 'John',
+          lastName: 'Smith',
+          birthday: '1996/03/21',
+          email: 'JohnnyBoy@mail.com',
+          city: 'fake',
+          country: 'USA',
+          street: 'sdfsdfsdfsdf',
+          phoneNumber: '45644544',
+        };
+        const result = await updateEmployeeById(employeeToUpdate, '123');
+        expect(result).to.be.an('object');
+        expect(result).to.haveOwnProperty('result');
+      });
+      it('should return an employee object, without the _id property and with a lastChanged property', async () => {
+        const employeeToUpdate = {
+          _id: '123',
+          firstName: 'John',
+          lastName: 'Smith',
+          birthday: '1996/03/21',
+          email: 'JohnnyBoy@mail.com',
+          city: 'fake',
+          country: 'USA',
+          street: 'sdfsdfsdfsdf',
+          phoneNumber: '45644544',
+        };
+        const result = await updateEmployeeById(employeeToUpdate, '123');
+        expect(result.result).to.be.an('object');
+        expect(result.result).to.not.haveOwnProperty('_id');
+        expect(result.result).to.haveOwnProperty('lastChanged');
       });
       after(() => {
-        Job.create.restore();
-        Work.create.restore();
-        Wallet.create.restore();
-        User.create.restore();
-        Employee.populate.restore();
+        Employee.findOneAndUpdate.restore();
+      });
+    });
+    context('unsuccessfully updated employee', () => {
+      before(() => {
+        sinon.stub(Employee, 'findOneAndUpdate').throws();
+      });
+      it('should throw an error', async () => {
+        const employeeToUpdate = {
+          _id: '123',
+          firstName: 'John',
+          lastName: 'Smith',
+          birthday: '1996/03/21',
+          email: 'JohnnyBoy@mail.com',
+          city: 'fake',
+          country: 'USA',
+          street: 'sdfsdfsdfsdf',
+          phoneNumber: '45644544',
+        };
+        try {
+          await updateEmployeeById(employeeToUpdate, '123');
+        } catch (error) {
+          expect(error).to.be.an('Error');
+        }
+      });
+      after(() => {
+        Employee.findOneAndUpdate.restore();
+      });
+    });
+  });
+  describe('createEmployee', () => {
+    before(() => {
+      sinon.stub(Job, 'create').resolves();
+      sinon.stub(Work, 'create').resolves();
+      sinon.stub(Wallet, 'create').resolves();
+      sinon.stub(User, 'create').resolves();
+      sinon.stub(Employee, 'populate');
+    });
+    context('successfully create employee', () => {
+      before(() => {
+        sinon.stub(Employee, 'create').callsFake((employeeToCreate) => {
+          const newCreatedEmployee = employeeToCreate;
+          newCreatedEmployee.SetUpHyperLinks = () => null;
+          newCreatedEmployee.user.SetUpHyperLinks = () => null;
+          return newCreatedEmployee;
+        });
+      });
+      it('should return an object with status property of value 204 and result property ', async () => {
+        const employeeToCreate = {
+          _id: 'sdfsdfs54df4sd5f',
+          firstName: 'John',
+          lastName: 'Smith',
+          birthday: '1996/03/21',
+          email: 'JohnnyBoy@mail.com',
+          city: 'fake',
+          country: 'USA',
+          street: 'sdfsdfsdfsdf',
+          phoneNumber: '45644544',
+        };
+        const result = await createEmployee(employeeToCreate);
+        expect(result).to.be.an('object');
+        expect(result).to.haveOwnProperty('status');
+        expect(result.status).to.be.equal(204);
+        expect(result).to.haveOwnProperty('result');
+      });
+      it('should return an employee object', async () => {
+        const employeeToCreate = {
+          _id: 'sdfsdfs54df4sd5f',
+          firstName: 'John',
+          lastName: 'Smith',
+          birthday: '1996/03/21',
+          email: 'JohnnyBoy@mail.com',
+          city: 'fake',
+          country: 'USA',
+          street: 'sdfsdfsdfsdf',
+          phoneNumber: '45644544',
+        };
+        const result = await createEmployee(employeeToCreate);
+        expect(result.result).to.be.an('Object');
+        expect(result.result).to.haveOwnProperty('_id');
+      });
+      after(() => {
+        Employee.create.restore();
+      });
+    });
+    context('unsuccessfully create employee', () => {
+      before(() => {
+        sinon.stub(Employee, 'create').throws(new Error());
+      });
+      it('should throw an error', async () => {
+        const employeeToCreate = {
+          _id: 'sdfsdfs54df4sd5f',
+          firstName: 'John',
+          lastName: 'Smith',
+          birthday: '1996/03/21',
+          email: 'JohnnyBoy@mail.com',
+          city: 'fake',
+          country: 'USA',
+          street: 'sdfsdfsdfsdf',
+          phoneNumber: '45644544',
+        };
+        try {
+          await createEmployee(employeeToCreate);
+        } catch (error) {
+          expect(error).to.be.an('Error');
+        }
+      });
+      after(() => {
+        Employee.create.restore();
+      });
+    });
+    after(() => {
+      Job.create.restore();
+      Work.create.restore();
+      Wallet.create.restore();
+      User.create.restore();
+      Employee.populate.restore();
+    });
+  });
+  describe('deleteEmployeeById', () => {
+    context('successfully delete an employee', () => {
+      before(() => {
+        sinon.stub(Employee, 'findOneAndRemove');
+      });
+      it('should return an object with a result property', async () => {
+        const result = await deleteEmployeeById('123');
+        expect(result).to.be.an('object');
+        expect(result).to.haveOwnProperty('result');
+      });
+      it('should return a string with the message "Successfully deleted"', async () => {
+        const result = await deleteEmployeeById('123');
+        expect(result.result).to.be.an('string');
+        expect(result.result).to.equal('Successfully deleted');
+      });
+      after(() => {
+        Employee.findOneAndRemove.restore();
+      });
+    });
+    context('unsuccessfully deleted an employee', () => {
+      before(() => {
+        sinon.stub(Employee, 'findOneAndRemove').throws();
+      });
+      it('should throw an error', async () => {
+        try {
+          await deleteEmployeeById('123');
+        } catch (error) {
+          expect(error).to.be.an('Error');
+        }
+      });
+      after(() => {
+        Employee.findOneAndRemove.restore();
       });
     });
   });

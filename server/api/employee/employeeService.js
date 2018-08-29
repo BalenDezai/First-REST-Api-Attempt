@@ -16,7 +16,13 @@ class EmployeeService {
    * @returns {Promise} a Promise
    */
   static findAllEmployees(conditions) {
-    return Employee.find(conditions, 'firstName lastName phoneNumber links').exec();
+    return new Promise((resolve, reject) => {
+      if (typeof conditions !== 'object') reject(new Error(`${typeof conditions} is not an object`));
+
+      if (Array.isArray(conditions)) reject(new Error('array is not an object'));
+
+      resolve(Employee.find(conditions, 'firstName lastName phoneNumber links'));
+    });
   }
 
 
@@ -26,7 +32,11 @@ class EmployeeService {
    * @returns {Promise} a promise
    */
   static findEmployeeById(id) {
-    return Employee.findOne({ _id: id }).populate('user', 'username email links').exec();
+    return new Promise((resolve, reject) => {
+      if (typeof id !== 'string') reject(new Error(`${typeof id} is not a string`));
+
+      resolve(Employee.findOne({ _id: id }).populate('user', 'username email links'));
+    });
   }
 
   /**
@@ -37,8 +47,16 @@ class EmployeeService {
    */
   static updateEmployeeById(obj, id) {
     //  sets the oj property to the found employee, and returns the new verison
-    return Employee
-      .findOneAndUpdate({ _id: id }, { $set: obj }, { new: true }).exec();
+    return new Promise((resolve, reject) => {
+      if (typeof id !== 'string') reject(new Error(`${typeof id} is not an string`));
+
+      if (typeof obj !== 'object') reject(new Error(`${typeof obj} is not an object`));
+
+      if (Array.isArray(obj)) reject(new Error('array is not an object'));
+
+      resolve(Employee
+        .findOneAndUpdate({ _id: id }, { $set: obj }, { new: true }));
+    });
   }
 
   /**
@@ -46,18 +64,32 @@ class EmployeeService {
    * @param {string} id id to delete employee by
    */
   static deleteEmployeeById(id) {
-    return Employee.findOneAndRemove({ _id: id }).exec();
+    return new Promise((resolve, reject) => {
+      if (typeof id !== 'string') reject(new Error(`${typeof id} is not an string`));
+
+      resolve(Employee.findOneAndRemove({ _id: id }));
+    });
   }
 
   /**
    * populates an objects field with selected fields
    * @param {*} obj the object to populate
-   * @param {*} path the field/path to populate
-   * @param {*} select the fields to of the populated object
+   * @param {string} path the field/path to populate
+   * @param {string} select the fields to of the populated object
    * @returns {Promise} returns a promise
    */
   static populate(obj, path, select) {
-    return Employee.populate(obj, { path, select }).exec();
+    return new Promise((resolve, reject) => {
+      if (typeof obj !== 'object') reject(new Error(`${typeof obj} is not an object`));
+
+      if (Array.isArray(obj)) reject(new Error('array is not an object'));
+
+      if (typeof path !== 'string') reject(new Error(`${typeof path} is not an string`));
+
+      if (typeof select !== 'string') reject(new Error(`${typeof path} is not an string`));
+
+      resolve(Employee.populate(obj, { path, select }));
+    });
   }
 
   /**

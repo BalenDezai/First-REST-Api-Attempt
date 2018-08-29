@@ -75,7 +75,7 @@ module.exports = class EmployeeController {
     createdEmployee.SetUpHyperLinks(host, originalUrl);
     return {
       status: 204,
-      result: createEmployee,
+      result: createdEmployee,
     };
   }
 
@@ -89,7 +89,6 @@ module.exports = class EmployeeController {
   static async updateEmployeeById(employee, id, host, originalUrl) {
     const newEmployee = copyObjectAndAddLastChanged(employee, '_id user');
     const updatedEmployee = await updateEmployeeById(newEmployee, id);
-    console.log(updatedEmployee);
     updatedEmployee.SetUpHyperLinks(host, originalUrl);
     return {
       result: updatedEmployee,
