@@ -6,7 +6,7 @@ const Job = require('../job/jobModel');
 const Wallet = require('../wallet/walletModel');
 const Work = require('../work/workModel');
 const User = require('../user/userModel');
-const { findAllEmployees, findEmployeeById, updateEmployeeById} = require('./employeeService');
+const { findAllEmployees, findEmployeeById, updateEmployeeById } = require('./employeeService');
 
 const { expect } = chai;
 chai.use(dirtyChai);
