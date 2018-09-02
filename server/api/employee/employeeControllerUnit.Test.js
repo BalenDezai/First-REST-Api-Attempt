@@ -1,5 +1,6 @@
 const chai = require('chai');
 const sinon = require('sinon');
+const chaiAsPromised = require('chai-as-promised');
 const dirtyChai = require('dirty-chai');
 const Employee = require('./employeeModel');
 const Job = require('../job/jobModel');
@@ -15,6 +16,8 @@ const {
 } = require('./employeeController');
 
 const { expect } = chai;
+
+chai.use(chaiAsPromised);
 chai.use(dirtyChai);
 
 describe('employeeController Unit Tests', () => {
@@ -34,19 +37,19 @@ describe('employeeController Unit Tests', () => {
     context('successfully found employee', () => {
       it('should return an object with property result', async () => {
         const result = await getAllEmployees({ firstName: 'John' }, 'http://localhost:3000', '/api/v/employees');
-        expect(result).to.haveOwnProperty('result');
+        expect(result).to.have.property('result');
       });
       it('result object should contain property count and employees', async () => {
         const result = await getAllEmployees({ firstName: 'John' }, 'http://localhost:3000', '/api/v/employees');
         expect(result.result).to.be.an('object');
-        expect(result.result).to.haveOwnProperty('count');
-        expect(result.result).to.haveOwnProperty('employees');
+        expect(result.result).to.have.property('count');
+        expect(result.result).to.have.property('employees');
       });
       it('employee property should be an array of employee objects', async () => {
         const result = await getAllEmployees({ firstName: 'John' }, 'http://localhost:3000', '/api/v/employees');
         expect(result.result.employees).to.be.an('array');
         expect(result.result.employees[0]).to.be.an('object');
-        expect(result.result.employees[0]).to.haveOwnProperty('firstName');
+        expect(result.result.employees[0]).to.have.property('firstName');
       });
     });
     context('found no employee', () => {
@@ -91,7 +94,7 @@ describe('employeeController Unit Tests', () => {
       it('result property should be an employee object', async () => {
         const result = await getEmployeeById('123', 'http://localhost:3000', '/api/v/employees');
         expect(result.result).to.be.an('object');
-        expect(result.result).to.haveOwnProperty('firstName');
+        expect(result.result).to.have.property('firstName');
       });
     });
     context('found no employee', () => {
@@ -127,9 +130,9 @@ describe('employeeController Unit Tests', () => {
           street: 'sdfsdfsdfsdf',
           phoneNumber: '45644544',
         };
-        const result = await updateEmployeeById(employeeToUpdate, '123');
+        const result = await updateEmployeeById(employeeToUpdate, '123', 'http://localhost:3000', '/api/v/employees');
         expect(result).to.be.an('object');
-        expect(result).to.haveOwnProperty('result');
+        expect(result).to.have.property('result');
       });
       it('should return an employee object, without the _id property and with a lastChanged property', async () => {
         const employeeToUpdate = {
@@ -143,10 +146,10 @@ describe('employeeController Unit Tests', () => {
           street: 'sdfsdfsdfsdf',
           phoneNumber: '45644544',
         };
-        const result = await updateEmployeeById(employeeToUpdate, '123');
+        const result = await updateEmployeeById(employeeToUpdate, '123', 'http://localhost:3000', '/api/v/employees');
         expect(result.result).to.be.an('object');
-        expect(result.result).to.not.haveOwnProperty('_id');
-        expect(result.result).to.haveOwnProperty('lastChanged');
+        expect(result.result).to.not.have.property('_id');
+        expect(result.result).to.have.property('lastChanged');
       });
       after(() => {
         Employee.findOneAndUpdate.restore();
@@ -168,11 +171,7 @@ describe('employeeController Unit Tests', () => {
           street: 'sdfsdfsdfsdf',
           phoneNumber: '45644544',
         };
-        try {
-          await updateEmployeeById(employeeToUpdate, '123');
-        } catch (error) {
-          expect(error).to.be.an('Error');
-        }
+        await expect(updateEmployeeById(employeeToUpdate, '123', 'http://localhost:3000', '/api/v/employees')).to.be.rejected();
       });
       after(() => {
         Employee.findOneAndUpdate.restore();
@@ -193,7 +192,7 @@ describe('employeeController Unit Tests', () => {
           const newCreatedEmployee = employeeToCreate;
           newCreatedEmployee.SetUpHyperLinks = () => null;
           newCreatedEmployee.user.SetUpHyperLinks = () => null;
-          return newCreatedEmployee;
+          return Promise.resolve(newCreatedEmployee);
         });
       });
       it('should return an object with status property of value 204 and result property ', async () => {
@@ -210,9 +209,9 @@ describe('employeeController Unit Tests', () => {
         };
         const result = await createEmployee(employeeToCreate);
         expect(result).to.be.an('object');
-        expect(result).to.haveOwnProperty('status');
+        expect(result).to.have.property('status');
         expect(result.status).to.be.equal(204);
-        expect(result).to.haveOwnProperty('result');
+        expect(result).to.have.property('result');
       });
       it('should return an employee object', async () => {
         const employeeToCreate = {
@@ -228,7 +227,7 @@ describe('employeeController Unit Tests', () => {
         };
         const result = await createEmployee(employeeToCreate);
         expect(result.result).to.be.an('Object');
-        expect(result.result).to.haveOwnProperty('_id');
+        expect(result.result).to.have.property('_id');
       });
       after(() => {
         Employee.create.restore();
@@ -250,11 +249,7 @@ describe('employeeController Unit Tests', () => {
           street: 'sdfsdfsdfsdf',
           phoneNumber: '45644544',
         };
-        try {
-          await createEmployee(employeeToCreate);
-        } catch (error) {
-          expect(error).to.be.an('Error');
-        }
+        await expect(createEmployee(employeeToCreate)).to.be.rejected();
       });
       after(() => {
         Employee.create.restore();
@@ -276,7 +271,7 @@ describe('employeeController Unit Tests', () => {
       it('should return an object with a result property', async () => {
         const result = await deleteEmployeeById('123');
         expect(result).to.be.an('object');
-        expect(result).to.haveOwnProperty('result');
+        expect(result).to.have.property('result');
       });
       it('should return a string with the message "Successfully deleted"', async () => {
         const result = await deleteEmployeeById('123');
@@ -292,11 +287,7 @@ describe('employeeController Unit Tests', () => {
         sinon.stub(Employee, 'findOneAndRemove').throws();
       });
       it('should throw an error', async () => {
-        try {
-          await deleteEmployeeById('123');
-        } catch (error) {
-          expect(error).to.be.an('Error');
-        }
+        await expect(deleteEmployeeById('123')).to.be.rejected();
       });
       after(() => {
         Employee.findOneAndRemove.restore();

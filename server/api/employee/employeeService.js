@@ -6,6 +6,7 @@ const Job = require('../job/jobModel');
 const Wallet = require('../wallet/walletModel');
 const Work = require('../work/workModel');
 const User = require('../user/userModel');
+const capitalFirstLetter = require('../../util/capitalFirstLetter');
 const copyObject = require('../../util/clonePropertiesToNewObject');
 
 
@@ -48,7 +49,7 @@ class EmployeeService {
   static updateEmployeeById(obj, id) {
     //  sets the oj property to the found employee, and returns the new verison
     return new Promise((resolve, reject) => {
-      if (typeof id !== 'string') reject(new Error(`${typeof id} is not an string`));
+      if (typeof id !== 'string') reject(new Error(`${typeof id} is not a string`));
 
       if (typeof obj !== 'object') reject(new Error(`${typeof obj} is not an object`));
 
@@ -62,10 +63,11 @@ class EmployeeService {
   /**
    * finds an employee with the given id and deletes it from the table
    * @param {string} id id to delete employee by
+   * @returns {promise} a promise
    */
   static deleteEmployeeById(id) {
     return new Promise((resolve, reject) => {
-      if (typeof id !== 'string') reject(new Error(`${typeof id} is not an string`));
+      if (typeof id !== 'string') reject(new Error(`${typeof id} is not a string`));
 
       resolve(Employee.findOneAndRemove({ _id: id }));
     });
@@ -84,9 +86,9 @@ class EmployeeService {
 
       if (Array.isArray(obj)) reject(new Error('array is not an object'));
 
-      if (typeof path !== 'string') reject(new Error(`${typeof path} is not an string`));
+      if (typeof path !== 'string') reject(new Error(`${typeof path} is not a string`));
 
-      if (typeof select !== 'string') reject(new Error(`${typeof path} is not an string`));
+      if (typeof select !== 'string') reject(new Error(`${typeof select} is not a string`));
 
       resolve(Employee.populate(obj, { path, select }));
     });
@@ -98,22 +100,25 @@ class EmployeeService {
    * @returns {Promise} a promise to be resolved
    */
   static createEmployee(employee) {
-    const createAll = [
-      Job.create({
-        _Owner: employee._id,
-      }),
-      Wallet.create({
-        _Owner: employee._id,
-      }),
-      Work.create({
-        _Owner: employee._id,
-      }),
-      User.create(employee.user),
-    ];
-    //  TODO: test if this works
-    Promise.all(createAll);
-
-    return Promise.resolve(Employee.create(employee));
+    return new Promise((resolve, reject) => {
+      if (typeof employee !== 'object') reject(new Error(`${typeof employee} is not an object`));
+      if (Array.isArray(employee)) reject(new Error('array is not an object'));
+      const createAll = [
+        Job.create({
+          _Owner: employee._id,
+        }),
+        Wallet.create({
+          _Owner: employee._id,
+        }),
+        Work.create({
+          _Owner: employee._id,
+        }),
+        User.create(employee.user),
+      ];
+      //  TODO: test if this works
+      Promise.all(createAll);
+      resolve(Employee.create(employee));
+    });
   }
 
   /**
@@ -123,10 +128,14 @@ class EmployeeService {
    * @returns {object} an object resembling the employee model
    */
   static async createEmployeeObject(employee, user) {
+    if (typeof employee !== 'object') throw new Error(`${typeof employee} is not an object`);
+
+    if (Array.isArray(employee)) throw new Error('array is not an object');
+
     const newUser = user || {};
     let role;
     if (newUser.role) {
-      role = `${newUser.role.substring(0, 1).toUpperCase()}${newUser.role.substring(1, newUser.role.length).toLowerCase()}`;
+      role = capitalFirstLetter(newUser.role);
     }
     if (!newUser.role) {
       role = 'Employee';

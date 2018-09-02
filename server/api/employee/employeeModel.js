@@ -5,7 +5,12 @@ const employeeSchema = new mongoose.Schema({
   _id: { type: mongoose.Schema.Types.ObjectId, default: () => new mongoose.Types.ObjectId() },
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
-  email: { type: String, require: true },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+    match: /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/,
+  },
   birthday: { type: Date, required: true },
   city: { type: String, required: true },
   country: { type: String, required: true },
