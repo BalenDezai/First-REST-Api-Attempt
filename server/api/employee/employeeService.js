@@ -135,6 +135,7 @@ class EmployeeService {
     const newUser = user || {};
     let role;
     if (newUser.role) {
+      //  TODO: add capitalFirstLeter to the service?
       role = capitalFirstLetter(newUser.role);
     }
     if (!newUser.role) {
@@ -179,7 +180,7 @@ class EmployeeService {
    * @param {string} fields fields to exclude
    */
   static copyObjectAndAddLastChanged(obj, fields) {
-    //  add evrey properti from req.body except for _id and user
+    //  add every property from obj except for properties in fields
     //  to newBody  to be updated
     //  better solution to delete operator (slow)
     const newObj = copyObject(obj, fields);

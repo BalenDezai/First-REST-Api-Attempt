@@ -9,7 +9,7 @@
     ]
   },
   "scripts": {
-    "test": "mocha ./server/api/**/*.Test.js",
+    "test": "mocha ./server/api/**/tests/*.Test.js",
     "start": "node ./server.js",
     "dev": "nodemon ./server.js ",
     "lint": "node_modules/.bin/eslint server/**/*.js",

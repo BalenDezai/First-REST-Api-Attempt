@@ -28,7 +28,7 @@ const employeeSchema = new mongoose.Schema({
   }],
 });
 
-employeeSchema.method('SetUpHyperLinks', function setupHL(hostName, url, options) {
+employeeSchema.method('setupHyperLinks', function setupHL(hostName, url, options) {
   {
     const hateaosEndpoints = [
       {

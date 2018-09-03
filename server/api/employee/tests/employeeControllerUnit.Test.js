@@ -2,18 +2,18 @@ const chai = require('chai');
 const sinon = require('sinon');
 const chaiAsPromised = require('chai-as-promised');
 const dirtyChai = require('dirty-chai');
-const Employee = require('./employeeModel');
-const Job = require('../job/jobModel');
-const Wallet = require('../wallet/walletModel');
-const Work = require('../work/workModel');
-const User = require('../user/userModel');
+const Employee = require('../employeeModel');
+const Job = require('../../job/jobModel');
+const Wallet = require('../../wallet/walletModel');
+const Work = require('../../work/workModel');
+const User = require('../../user/userModel');
 const {
   getAllEmployees,
   getEmployeeById,
   createEmployee,
   updateEmployeeById,
   deleteEmployeeById,
-} = require('./employeeController');
+} = require('../employeeController');
 
 const { expect } = chai;
 
@@ -29,7 +29,7 @@ describe('employeeController Unit Tests', () => {
           lastName: 'Smith',
           Phonenumber: '41415465',
           links: [],
-          SetUpHyperLinks: () => null,
+          setupHyperLinks: () => null,
         }];
         return db.filter(employee => employee.firstName === obj.firstName);
       });
@@ -73,9 +73,9 @@ describe('employeeController Unit Tests', () => {
           lastName: 'Smith',
           Phonenumber: '41415465',
           user: {
-            SetUpHyperLinks: () => null,
+            setupHyperLinks: () => null,
           },
-          SetUpHyperLinks: () => null,
+          setupHyperLinks: () => null,
         }];
         const foundEmployee = {
           found: db.filter(employee => employee._id === id._id)[0],
@@ -114,7 +114,7 @@ describe('employeeController Unit Tests', () => {
       before(() => {
         sinon.stub(Employee, 'findOneAndUpdate').callsFake((id, obj) => {
           const newObj = obj.$set;
-          newObj.SetUpHyperLinks = () => null;
+          newObj.setupHyperLinks = () => null;
           return newObj;
         });
       });
@@ -190,8 +190,8 @@ describe('employeeController Unit Tests', () => {
       before(() => {
         sinon.stub(Employee, 'create').callsFake((employeeToCreate) => {
           const newCreatedEmployee = employeeToCreate;
-          newCreatedEmployee.SetUpHyperLinks = () => null;
-          newCreatedEmployee.user.SetUpHyperLinks = () => null;
+          newCreatedEmployee.setupHyperLinks = () => null;
+          newCreatedEmployee.user.setupHyperLinks = () => null;
           return Promise.resolve(newCreatedEmployee);
         });
       });

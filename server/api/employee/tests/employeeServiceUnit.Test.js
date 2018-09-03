@@ -2,11 +2,11 @@ const chai = require('chai');
 const sinon = require('sinon');
 const chaiAsPromised = require('chai-as-promised');
 const dirtyChai = require('dirty-chai');
-const Employee = require('./employeeModel');
-const Job = require('../job/jobModel');
-const Wallet = require('../wallet/walletModel');
-const Work = require('../work/workModel');
-const User = require('../user/userModel');
+const Employee = require('../employeeModel');
+const Job = require('../../job/jobModel');
+const Wallet = require('../../wallet/walletModel');
+const Work = require('../../work/workModel');
+const User = require('../../user/userModel');
 const {
   findAllEmployees,
   findEmployeeById,
@@ -17,7 +17,7 @@ const {
   hasKeys,
   copyObjectAndAddLastChanged,
   populate,
-} = require('./employeeService');
+} = require('../employeeService');
 
 const { expect } = chai;
 

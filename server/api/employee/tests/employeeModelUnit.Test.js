@@ -1,7 +1,7 @@
 const chai = require('chai');
 const dirtyChai = require('dirty-chai');
 const { ObjectId } = require('mongoose').Types;
-const Employee = require('./employeeModel');
+const Employee = require('../employeeModel');
 
 const { expect } = chai;
 
@@ -257,7 +257,7 @@ describe('Employee', () => {
           startDate: new Date(),
           links: [],
         });
-        emp.SetUpHyperLinks('hostname', 'url', {});
+        emp.setupHyperLinks('hostname', 'url', {});
 
         expect(emp.links).to.be.an('array');
         expect(emp.links).to.not.be.empty();

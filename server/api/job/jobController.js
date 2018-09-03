@@ -1,26 +1,35 @@
-const Job = require('./jobModel');
+const { findJobByOwner, findJobByOwnerAndUpdate } = require('./jobService');
 const copyObject = require('../../util/clonePropertiesToNewObject');
 
 module.exports = class JobController {
-  static async getJobById(req, res, next) {
-    try {
-      const foundJob = await Job.findOne({ _Owner: req.params.id });
-      foundJob.SetUpHyperLinks(req.headers.host, req.originalUrl);
-      res.status(200).json(foundJob);
-    } catch (error) {
-      next(error);
-    }
+  /**
+   *  returns a job document that is owned by a specific owner
+   * @param {string} id the id of the jobs owner
+   * @param {string} host the host name portion of the requested url
+   * @param {string} url the requested url after the hostname
+   * @returns {object} job document
+   */
+  static async getJobByOwnerId(id, host, url) {
+    const foundJob = await findJobByOwner(id);
+    foundJob.setupHyperLinks(host, url);
+    return {
+      result: foundJob,
+    };
   }
 
-  static async updateJobById(req, res, next) {
-    try {
-      req.body = copyObject(req.body, '_id _Owner');
-      const updatedJob = await Job
-        .findOneAndUpdate({ _Owner: req.params.id }, { $set: req.body }, { new: true });
-      updatedJob.SetUpHyperLinks(req.headers.host, req.originalUrl);
-      res.status(200).json(updatedJob);
-    } catch (error) {
-      next(error);
-    }
+  /**
+   *  finds a job by the owner id, updates it, and returns it
+   * @param {object} job the new updated job object
+   * @param {string} id the id of the job to update
+   * @param {string} host the host name portion of the requested url
+   * @param {string} url the requested url after the hostname
+   */
+  static async updateJobByOwnerId(newJob, id, host, url) {
+    const job = copyObject(newJob, '_id _Owner');
+    const updatedJob = await findJobByOwnerAndUpdate(id, job);
+    updatedJob.setupHyperLinks(host, url);
+    return {
+      result: updatedJob,
+    };
   }
 };

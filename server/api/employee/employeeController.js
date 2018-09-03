@@ -23,7 +23,7 @@ module.exports = class EmployeeController {
     const employees = await findAllEmployees(obj);
     if (employees.length > 0) {
       for (let i = 0; i < employees.length; i += 1) {
-        employees[i].SetUpHyperLinks(host, originalUrl, { queryString: isQueryString });
+        employees[i].setupHyperLinks(host, originalUrl, { queryString: isQueryString });
       }
       return {
         result: {
@@ -47,8 +47,8 @@ module.exports = class EmployeeController {
   static async getEmployeeById(id, host, originalUrl) {
     const foundEmployee = await findEmployeeById(id);
     if (foundEmployee) {
-      foundEmployee.SetUpHyperLinks(host, originalUrl, { removeAfterSlash: 1 });
-      foundEmployee.user.SetUpHyperLinks(host, '/api/v1/users/');
+      foundEmployee.setupHyperLinks(host, originalUrl, { removeAfterSlash: 1 });
+      foundEmployee.user.setupHyperLinks(host, '/api/v1/users/');
       return {
         result: foundEmployee,
       };
@@ -71,8 +71,8 @@ module.exports = class EmployeeController {
     const employeeObject = await createEmployeeObject(employee, user);
     const createdEmployee = await createEmployee(employeeObject);
     await populate(createdEmployee, 'user', 'username role links');
-    createdEmployee.user.SetUpHyperLinks(host, '/api/v1/users/');
-    createdEmployee.SetUpHyperLinks(host, originalUrl);
+    createdEmployee.user.setupHyperLinks(host, '/api/v1/users/');
+    createdEmployee.setupHyperLinks(host, originalUrl);
     return {
       status: 204,
       result: createdEmployee,
@@ -89,7 +89,7 @@ module.exports = class EmployeeController {
   static async updateEmployeeById(employee, id, host, originalUrl) {
     const newEmployee = copyObjectAndAddLastChanged(employee, '_id user');
     const updatedEmployee = await updateEmployeeById(newEmployee, id);
-    updatedEmployee.SetUpHyperLinks(host, originalUrl);
+    updatedEmployee.setupHyperLinks(host, originalUrl);
     return {
       result: updatedEmployee,
     };

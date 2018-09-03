@@ -18,7 +18,7 @@ const jobSchema = new mongoose.Schema({
   },
 });
 
-jobSchema.method('SetUpHyperLinks', function setupHL(hostName, url) {
+jobSchema.method('setupHyperLinks', function setupHL(hostName, url) {
   {
     const hateaosEndpoints = [
       {
@@ -32,7 +32,7 @@ jobSchema.method('SetUpHyperLinks', function setupHL(hostName, url) {
         description: 'update this job',
       },
     ];
-    hlGenerator(this, hostName, url, hateaosEndpoints, true);
+    hlGenerator(this, hostName, url, hateaosEndpoints, { isChild: true });
   }
 });
 
