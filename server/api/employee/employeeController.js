@@ -54,7 +54,7 @@ module.exports = class EmployeeController {
       };
     }
     return {
-      status: 201,
+      status: 204,
       result: null,
     };
   }
@@ -74,7 +74,7 @@ module.exports = class EmployeeController {
     createdEmployee.user.setupHyperLinks(host, '/api/v1/users/');
     createdEmployee.setupHyperLinks(host, originalUrl);
     return {
-      status: 204,
+      status: 201,
       result: createdEmployee,
     };
   }
