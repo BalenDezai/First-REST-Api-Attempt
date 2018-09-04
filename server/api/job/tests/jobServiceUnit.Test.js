@@ -10,7 +10,7 @@ const { expect } = chai;
 chai.use(chaiAsPromised);
 chai.use(dirtyChai);
 
-describe('employeeService Unit Tests', () => {
+describe('Job Service Unit Tests', () => {
   describe('findJobByOwner', () => {
     before(() => {
       sinon.stub(Job, 'findOne').resolves({

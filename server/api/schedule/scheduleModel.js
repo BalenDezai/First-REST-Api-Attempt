@@ -20,7 +20,7 @@ const scheduleSchema = new mongoose.Schema({
   },
 });
 
-scheduleSchema.method('SetUpHyperLinks', function setupHL(hostName, url) {
+scheduleSchema.method('setupHyperLinks', function setupHL(hostName, url) {
   {
     const hateaosEndpoints = [
       {

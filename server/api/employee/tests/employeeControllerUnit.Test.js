@@ -20,7 +20,7 @@ const { expect } = chai;
 chai.use(chaiAsPromised);
 chai.use(dirtyChai);
 
-describe('employeeController Unit Tests', () => {
+describe('Employee Controller Unit Tests', () => {
   describe('getAllEmployees', () => {
     before(async () => {
       sinon.stub(Employee, 'find').callsFake((obj) => {
@@ -98,10 +98,10 @@ describe('employeeController Unit Tests', () => {
       });
     });
     context('found no employee', () => {
-      it('should return an object with status property of value 201 and result property of value of null', async () => {
+      it('should return an object with status property of value 204 and result property of value of null', async () => {
         const result = await getEmployeeById('12345', 'http://localhost:3000', '/api/v/employees');
         expect(result).to.be.an('object');
-        expect(result.status).to.be.equal(201);
+        expect(result.status).to.be.equal(204);
         expect(result.result).to.be.null();
       });
     });
@@ -195,7 +195,7 @@ describe('employeeController Unit Tests', () => {
           return Promise.resolve(newCreatedEmployee);
         });
       });
-      it('should return an object with status property of value 204 and result property ', async () => {
+      it('should return an object with status property of value 201 and result property ', async () => {
         const employeeToCreate = {
           _id: 'sdfsdfs54df4sd5f',
           firstName: 'John',
@@ -210,7 +210,7 @@ describe('employeeController Unit Tests', () => {
         const result = await createEmployee(employeeToCreate);
         expect(result).to.be.an('object');
         expect(result).to.have.property('status');
-        expect(result.status).to.be.equal(204);
+        expect(result.status).to.be.equal(201);
         expect(result).to.have.property('result');
       });
       it('should return an employee object', async () => {

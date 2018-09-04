@@ -24,7 +24,7 @@ const { expect } = chai;
 chai.use(chaiAsPromised);
 chai.use(dirtyChai);
 
-describe('employeeService Unit Tests', () => {
+describe('Employee Service Unit Tests', () => {
   describe('findAllEmployees', () => {
     before(() => {
       sinon.stub(Employee, 'find').callsFake((conditions) => {

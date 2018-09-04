@@ -7,7 +7,7 @@ const { expect } = chai;
 
 chai.use(dirtyChai);
 
-describe('Employee', () => {
+describe('Employee Model Unit Tests', () => {
   const id = ObjectId();
   context('validation', () => {
     it('should use specified id if there is one', () => {

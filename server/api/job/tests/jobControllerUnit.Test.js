@@ -10,7 +10,7 @@ const { expect } = chai;
 chai.use(chaiAsPromised);
 chai.use(dirtyChai);
 
-describe('jobController Unit Tests', () => {
+describe('Job Controller Unit Tests', () => {
   describe('getJobByOwnerId', () => {
     before(() => {
       sinon.stub(Job, 'findOne').callsFake((conditions) => {
