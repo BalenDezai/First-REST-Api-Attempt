@@ -14,13 +14,11 @@ describe('Job Model Unit Tests', () => {
       const newJob = new Job({
         _id: jobId,
       });
-      expect(newJob).to.have.property('_id');
-      expect(newJob._id).to.be.equal(jobId);
+      expect(newJob).to.have.property('_id').which.is.equal(jobId);
     });
     it('should create a new id if theer is no id', () => {
       const newJob = new Job();
-      expect(newJob).to.have.property('_id');
-      expect(newJob._id).to.not.be.null();
+      expect(newJob).to.have.property('_id').which.is.not.null();
     });
     it('should create a default job title if there isnt one', () => {
       const newJob = new Job({

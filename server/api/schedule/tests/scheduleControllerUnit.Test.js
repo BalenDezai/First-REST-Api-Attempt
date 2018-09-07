@@ -34,31 +34,35 @@ describe('Schedule Controller Unit Tests', () => {
       });
     });
     context('successfully found schedules', () => {
-      it('should return a promise that eventually resolves to an object with property result', () => {
-        const getAllSchedulesPromise = getAllSchedules('1234', '', '');
-        expect(getAllSchedulesPromise).to.be.a('promise');
-        expect(getAllSchedulesPromise).to.eventually.be.fulfilled();
-        expect(getAllSchedulesPromise).to.eventually.be.an('object');
-        expect(getAllSchedulesPromise).to.eventually.have.property('result');
+      it('should return a promise that eventually resolves to an object with property result', async () => {
+        await expect(getAllSchedules('1234', '', ''))
+          .to.be.a('promise')
+          .that.is.eventually.fulfilled()
+          .to.an('object')
+          .with.property('result');
       });
       it('result object should contain property count and schedules', async () => {
-        const result = await getAllSchedules('1234', '', '');
-        expect(result.result).to.have.property('count');
-        expect(result.result).to.have.property('schedules');
+        await expect(getAllSchedules('1234', '', ''))
+          .to.eventually.be.an('object')
+          .that.has.property('result')
+          .with.keys('schedules', 'count');
       });
       it('schedules property should be an array of schedule objects', async () => {
-        const result = await getAllSchedules('1234', '', '');
-        expect(result.result.schedules).to.be.an('array');
-        expect(result.result.schedules[0]).to.be.an('object');
-        expect(result.result.schedules[0]).to.have.property('start');
+        await expect(getAllSchedules('1234', '', ''))
+          .to.eventually.be.an('object')
+          .with.nested.property('result.schedules')
+          .that.is.an('array')
+          .with.property('[0]')
+          .that.is.an('object')
+          .with.property('start');
       });
     });
     context('found no schedules', () => {
       it('should return an object with status property of value 204 and result property of value null', async () => {
-        const result = await getAllSchedules('123', '', '');
-        expect(result).to.be.an('object');
-        expect(result.status).to.be.equal(204);
-        expect(result.result).to.be.null();
+        await expect(getAllSchedules('123', '', ''))
+          .to.eventually.be.an('object')
+          .with.keys('status', 'result')
+          .to.deep.equal({ status: 204, result: null });
       });
     });
     after(() => {
@@ -78,29 +82,30 @@ describe('Schedule Controller Unit Tests', () => {
           links: [],
           setupHyperLinks: () => null,
         }];
-        return db.filter(schedueles => schedueles._id === conditions._id)[0];
+        return Promise.resolve(db.filter(schedueles => schedueles._id === conditions._id)[0]);
       });
     });
     context('successfully found schedule', () => {
-      it('should return a promise that eventually resolves to an object with property result', () => {
-        const getScheduleByIdPromise = getScheduleById('123', '', '');
-        expect(getScheduleByIdPromise).to.be.a('promise');
-        expect(getScheduleByIdPromise).to.eventually.be.fulfilled();
-        expect(getScheduleByIdPromise).to.eventually.be.an('object');
-        expect(getScheduleByIdPromise).to.eventually.have.property('result');
+      it('should return a promise that eventually resolves to an object with property result', async () => {
+        await expect(getScheduleById('123', '', ''))
+          .to.be.a('promise')
+          .that.is.eventually.fulfilled()
+          .to.an('object')
+          .with.property('result');
       });
       it('result property should be a schedule object', async () => {
-        const result = await getScheduleById('123', '', '');
-        expect(result.result).to.be.an('object');
-        expect(result.result).to.have.property('start');
+        await expect(getScheduleById('123', '', ''))
+          .to.eventually.have.property('result')
+          .that.is.an('object')
+          .with.property('start');
       });
     });
     context('found no schedule', () => {
       it('should return an object with status property of value 204 and result property of value null', async () => {
-        const result = await getScheduleById('1234', '', '');
-        expect(result).to.be.an('object');
-        expect(result.status).to.be.equal(204);
-        expect(result.result).to.be.null();
+        await expect(getScheduleById('1234', '', ''))
+          .to.eventually.be.an('object')
+          .with.keys('status', 'result')
+          .to.deep.equal({ status: 204, result: null });
       });
     });
     after(() => {
@@ -116,17 +121,17 @@ describe('Schedule Controller Unit Tests', () => {
           return newSchedule;
         });
       });
-      it('should return a promise that resolves to an object', () => {
+      it('should return a promise that resolves to an object', async () => {
         const scheduleToCreate = {
           start: '',
           end: '',
           holiday: '',
           weekend: '',
         };
-        const createSchedulePromise = createSchedule(scheduleToCreate, '1234', '', '');
-        expect(createSchedulePromise).to.be.a('promise');
-        expect(createSchedulePromise).to.eventually.be.fulfilled();
-        expect(createSchedulePromise).to.eventually.be.an('object');
+        await expect(createSchedule(scheduleToCreate, '1234', '', ''))
+          .to.be.a('promise')
+          .that.is.eventually.fulfilled()
+          .to.an('object');
       });
       it('returned object should have status property with the value 201 and a result property', async () => {
         const scheduleToCreate = {
@@ -135,11 +140,10 @@ describe('Schedule Controller Unit Tests', () => {
           holiday: '',
           weekend: '',
         };
-        const result = await createSchedule(scheduleToCreate, '1234', '', '');
-        expect(result).to.be.an('object');
-        expect(result).to.have.property('status');
-        expect(result).to.have.property('result');
-        expect(result.status).to.be.equal(201);
+        await expect(createSchedule(scheduleToCreate, '1234', '', ''))
+          .to.eventually.be.an('object')
+          .with.keys('status', 'result')
+          .and.property('status').that.equals(201);
       });
       it('should return an employee object', async () => {
         const scheduleToCreate = {
@@ -148,9 +152,10 @@ describe('Schedule Controller Unit Tests', () => {
           holiday: '',
           weekend: '',
         };
-        const result = await createSchedule(scheduleToCreate, '1234');
-        expect(result.result).to.be.an('object');
-        expect(result.result).to.have.property('start');
+        await expect(createSchedule(scheduleToCreate, '1234'))
+          .to.eventually.have.property('result')
+          .that.is.an('object')
+          .with.property('start');
       });
       after(() => {
         Schedule.create.restore();
@@ -183,17 +188,17 @@ describe('Schedule Controller Unit Tests', () => {
           return newSchedule;
         });
       });
-      it('should return a promise that resolves to an object', () => {
+      it('should return a promise that resolves to an object', async () => {
         const scheduleToCreate = {
           start: '',
           end: '',
           holiday: '',
           weekend: '',
         };
-        const updateScheduleByIdPromise = updateScheduleById(scheduleToCreate, '123', '', '');
-        expect(updateScheduleByIdPromise).to.be.a('promise');
-        expect(updateScheduleByIdPromise).to.eventually.be.fulfilled();
-        expect(updateScheduleByIdPromise).to.eventually.be.an('object');
+        await expect(updateScheduleById(scheduleToCreate, '123', '', ''))
+          .to.be.a('promise')
+          .that.is.eventually.fulfilled()
+          .to.an('object');
       });
       it('returned object should have result property', async () => {
         const scheduleToCreate = {
@@ -202,9 +207,9 @@ describe('Schedule Controller Unit Tests', () => {
           holiday: '',
           weekend: '',
         };
-        const result = await updateScheduleById(scheduleToCreate, '123', '', '');
-        expect(result).to.have.property('result');
-        expect(result.result).to.be.an('object');
+        await expect(updateScheduleById(scheduleToCreate, '123', '', ''))
+          .to.eventually.have.property('result')
+          .that.is.an('object');
       });
       it('result property should be a schedule object', async () => {
         const scheduleToCreate = {
@@ -213,8 +218,9 @@ describe('Schedule Controller Unit Tests', () => {
           holiday: '',
           weekend: '',
         };
-        const result = await updateScheduleById(scheduleToCreate, '123', '', '');
-        expect(result.result).to.have.property('start');
+        await expect(updateScheduleById(scheduleToCreate, '123', '', ''))
+          .to.eventually.have.property('result')
+          .that.has.property('start');
       });
       after(() => {
         Schedule.findOneAndUpdate.restore();
@@ -243,20 +249,21 @@ describe('Schedule Controller Unit Tests', () => {
       before(() => {
         sinon.stub(Schedule, 'findOneAndRemove').resolves();
       });
-      it('should return a promise that resolves to an object', () => {
-        const deleteScheduleByIdPromise = deleteScheduleById('123');
-        expect(deleteScheduleByIdPromise).to.be.a('promise');
-        expect(deleteScheduleByIdPromise).to.eventually.be.fulfilled();
-        expect(deleteScheduleByIdPromise).to.eventually.be.a('object');
+      it('should return a promise that resolves to an object', async () => {
+        await expect(deleteScheduleById('123'))
+          .to.be.a('promise')
+          .that.is.eventually.fulfilled()
+          .to.an('object');
       });
       it('returned object should have result property', async () => {
-        const result = await deleteScheduleById('123');
-        expect(result).to.have.property('result');
-        expect(result.result).to.be.a('string');
+        await expect(deleteScheduleById('123'))
+          .to.eventually.have.property('result')
+          .that.is.a('string');
       });
       it('result properly should be a message', async () => {
-        const result = await deleteScheduleById('123');
-        expect(result.result).to.be.equal('Successfully deleted schedule');
+        await expect(deleteScheduleById('123'))
+          .to.eventually.have.property('result')
+          .that.equals('Successfully deleted schedule');
       });
       after(() => {
         Schedule.findOneAndRemove.restore();
