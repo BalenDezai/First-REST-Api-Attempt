@@ -21,22 +21,22 @@ describe('Job Service Unit Tests', () => {
         setupHyperLinks: () => null,
       });
     });
-    it('should return a promise that eventually resolves to an object', () => {
+    it('should return a promise that eventually resolves to an object', async () => {
       const id = '123';
-      const findJobByOwnerPromise = findJobByOwner(id);
-      expect(findJobByOwnerPromise).to.be.a('promise');
-      expect(findJobByOwnerPromise).to.eventually.be.fulfilled();
-      expect(findJobByOwnerPromise).to.eventually.be.an('object');
+      await expect(findJobByOwner(id))
+        .to.be.a('promise')
+        .that.is.eventually.fulfilled()
+        .to.an('object');
     });
-    it('should resolve to a job object', () => {
+    it('should resolve to a job object', async () => {
       const id = '123';
-      const findJobByOwnerPromise = findJobByOwner(id);
-      expect(findJobByOwnerPromise).to.eventually.have.property('_id');
-      expect(findJobByOwnerPromise).to.eventually.have.property('jobTitle');
+      await expect(findJobByOwner(id))
+        .to.eventually.have.any.keys('_id', 'jobTitle');
     });
-    it('should throw if ownerId arguement is not a string', () => {
+    it('should throw if ownerId arguement is not a string', async () => {
       const id = { id: '123' };
-      expect(findJobByOwner(id)).to.be.rejectedWith(`${typeof id} is not a string`);
+      await expect(findJobByOwner(id))
+        .to.be.rejectedWith(`${typeof id} is not a string`);
     });
     after(() => {
       Job.findOne.restore();
@@ -51,16 +51,16 @@ describe('Job Service Unit Tests', () => {
         return newObj;
       });
     });
-    it('should return a promise that eventually resolves to an object', () => {
+    it('should return a promise that eventually resolves to an object', async () => {
       const toUpdate = {
         jobTitle: '',
         description: '',
         _Owner: '1234',
       };
-      const findJobByOwnerAndUpdatePromise = findJobByOwnerAndUpdate('123', toUpdate);
-      expect(findJobByOwnerAndUpdatePromise).to.be.a('promise');
-      expect(findJobByOwnerAndUpdatePromise).to.eventually.be.fulfilled();
-      expect(findJobByOwnerAndUpdatePromise).to.eventually.be.an('object');
+      await expect(findJobByOwnerAndUpdate('123', toUpdate))
+        .to.be.a('promise')
+        .that.is.eventually.fulfilled()
+        .to.an('object');
     });
     it('should resolve to a job object', async () => {
       const toUpdate = {
@@ -68,33 +68,34 @@ describe('Job Service Unit Tests', () => {
         description: '',
         _Owner: '1234',
       };
-      const updatedJob = await findJobByOwnerAndUpdate('123', toUpdate);
-      expect(updatedJob).to.be.an('object');
-      expect(updatedJob).to.have.property('_id');
-      expect(updatedJob).to.have.property('jobTitle');
+      await expect(findJobByOwnerAndUpdate('123', toUpdate))
+        .to.eventually.be.an('object').with.any.keys('_id', 'jobTitle');
     });
-    it('should throw if ownerId arguement isnt a string', () => {
+    it('should throw if ownerId arguement isnt a string', async () => {
       const ownerId = 123;
       const toUpdate = {
         jobTitle: '',
         description: '',
         _Owner: '1234',
       };
-      expect(findJobByOwnerAndUpdate(ownerId, toUpdate)).to.be.rejectedWith(`${typeof ownerId} is not a string`);
+      await expect(findJobByOwnerAndUpdate(ownerId, toUpdate))
+        .to.be.rejectedWith(`${typeof ownerId} is not a string`);
     });
-    it('should throw if obj arguement is an array', () => {
+    it('should throw if obj arguement is an array', async () => {
       const ownerId = '123';
       const toUpdate = [{
         jobTitle: '',
         description: '',
         _Owner: '1234',
       }];
-      expect(findJobByOwnerAndUpdate(ownerId, toUpdate)).to.be.rejectedWith('array is not an object');
+      await expect(findJobByOwnerAndUpdate(ownerId, toUpdate))
+        .to.be.rejectedWith('array is not an object');
     });
-    it('should throw if obj arguement is not an object', () => {
+    it('should throw if obj arguement is not an object', async () => {
       const ownerId = '123';
       const toUpdate = 'sdfsdfsdfsdf';
-      expect(findJobByOwnerAndUpdate(ownerId, toUpdate)).to.be.rejectedWith(`${typeof toUpdate} is not an object`);
+      await expect(findJobByOwnerAndUpdate(ownerId, toUpdate))
+        .to.be.rejectedWith(`${typeof toUpdate} is not an object`);
     });
     after(() => {
       Job.findOneAndUpdate.restore();

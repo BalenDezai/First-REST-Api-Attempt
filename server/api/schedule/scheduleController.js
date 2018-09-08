@@ -7,7 +7,7 @@ const {
   findAndUpdateScheduleById,
   findAndDeleteScheduleById,
 } = require('./scheduleService');
-const copyObject = require('../../util/clonePropertiesToNewObject');
+const { cloneProperties } = require('../../util/utils');
 
 module.exports = class ScheduleController {
   /**
@@ -82,7 +82,7 @@ module.exports = class ScheduleController {
    * @returns {Promise} a promise that resolves to an object
    */
   static async updateScheduleById(obj, id, host, url) {
-    const updated = copyObject(obj, '_id _Owner');
+    const updated = cloneProperties(obj, '_id _Owner');
     const updatedSchedule = await findAndUpdateScheduleById(updated, id);
     updatedSchedule.setupHyperLinks(host, url);
     return {

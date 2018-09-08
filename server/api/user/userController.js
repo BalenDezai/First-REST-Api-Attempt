@@ -1,37 +1,25 @@
-const User = require('./userModel');
-const { isValid } = require('mongoose').Types.ObjectId;
 const copyObject = require('../../util/clonePropertiesToNewObject');
+const { findAllUsers } = require('./userService');
 
 module.exports = class UserController {
-  static idValidParam(req, res, next) {
-    //  make sure user put req.params.id is avalid mongoose object
-    if (!isValid(req.params.id)) {
-      const error = new Error();
-      error.status = 404;
-      error.resMessage = 'Invalid ID';
-      next(error);
-    }
-    next();
-  }
-
-  static async getAllUsers(req, res, next) {
-    try {
-      const foundUsers = await User.find(req.query, 'username email links employee');
-      const documents = {
-        count: foundUsers.length,
-        users: foundUsers,
-      };
-      if (documents.count > 0) {
-        for (let i = 0; i < foundUsers.length; i += 1) {
-          foundUsers[i].SetUpHyperLinks(req.headers.host, req.originalUrl);
-        }
-        res.status(200).json(documents);
-      } else {
-        res.status(204).json(documents);
+  static async getAllUsers(obj, host, url) {
+    //  TODO: ccheck if obj is query stirng
+    const foundUsers = await findAllUsers(obj);
+    if (foundUsers.length > 0) {
+      for (let i = 0; i < foundUsers.length; i += 1) {
+        foundUsers[i].SetUpHyperLinks(host, url);
       }
-    } catch (error) {
-      next(error);
+      return {
+        result: {
+          count: foundUsers.length,
+          users: foundUsers,
+        },
+      };
     }
+    return {
+      status: 204,
+      result: null,
+    };
   }
 
   static async getOneUser(req, res, next) {

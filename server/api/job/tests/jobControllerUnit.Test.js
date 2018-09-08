@@ -25,18 +25,18 @@ describe('Job Controller Unit Tests', () => {
         return Promise.resolve(foundJob);
       });
     });
-    it('should return a promise that eventually resolves to an object', () => {
+    it('should return a promise that eventually resolves to an object', async () => {
       const ownerId = '1234';
-      const getJobByOwnerPromise = getJobByOwnerId(ownerId, '', '');
-      expect(getJobByOwnerPromise).to.be.a('promise');
-      expect(getJobByOwnerPromise).to.eventually.be.fulfilled();
-      expect(getJobByOwnerPromise).to.eventually.be.an('object');
+      await expect(getJobByOwnerId(ownerId, '', ''))
+        .to.be.a('promise')
+        .that.is.eventually.fulfilled()
+        .to.an('object');
     });
     it('should return an employee object', async () => {
       const ownerId = '1234';
-      const foundJob = await getJobByOwnerId(ownerId, '', '');
-      expect(foundJob.result).to.be.an('object');
-      expect(foundJob.result).to.have.property('_id');
+      await expect(getJobByOwnerId(ownerId, '', ''))
+        .to.eventually.have.property('result')
+        .that.is.an('object').with.property('_id');
     });
     after(() => {
       Job.findOne.restore();
@@ -51,7 +51,7 @@ describe('Job Controller Unit Tests', () => {
         return newObj;
       });
     });
-    it('should update a promise that eventually resolves to an object', () => {
+    it('should update a promise that eventually resolves to an object', async () => {
       const updatedJob = {
         _id: '123',
         jobTitle: '',
@@ -59,10 +59,10 @@ describe('Job Controller Unit Tests', () => {
         _Owner: '1234',
         setupHyperLinks: () => null,
       };
-      const updateJobByOwnerIdPromise = updateJobByOwnerId(updatedJob, '1234', '', '');
-      expect(updateJobByOwnerIdPromise).to.be.a('promise');
-      expect(updateJobByOwnerIdPromise).to.eventually.be.fulfilled();
-      expect(updateJobByOwnerIdPromise).to.eventually.be.an('object');
+      await expect(updateJobByOwnerId(updatedJob, '1234', '', ''))
+        .to.be.a('promise')
+        .that.is.eventually.fulfilled()
+        .to.an('object');
     });
     it('should return an employee object', async () => {
       const jobToUpdate = {
@@ -72,9 +72,9 @@ describe('Job Controller Unit Tests', () => {
         _Owner: '1234',
         setupHyperLinks: () => null,
       };
-      const updatedJob = await updateJobByOwnerId(jobToUpdate, '1234', '', '');
-      expect(updatedJob.result).to.be.an('object');
-      expect(updatedJob.result).to.have.property('_id');
+      await expect(updateJobByOwnerId(jobToUpdate, '1234', '', ''))
+        .to.eventually.have.property('result')
+        .that.is.an('object').with.property('_id');
     });
     after(() => {
       Job.findOneAndUpdate.restore();

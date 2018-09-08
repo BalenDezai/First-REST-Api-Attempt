@@ -1,5 +1,5 @@
 const { findJobByOwner, findJobByOwnerAndUpdate } = require('./jobService');
-const copyObject = require('../../util/clonePropertiesToNewObject');
+const { cloneProperties } = require('../../util/utils');
 
 module.exports = class JobController {
   /**
@@ -25,7 +25,7 @@ module.exports = class JobController {
    * @param {string} url the requested url after the hostname
    */
   static async updateJobByOwnerId(newJob, id, host, url) {
-    const job = copyObject(newJob, '_id _Owner');
+    const job = cloneProperties(newJob, '_id _Owner');
     const updatedJob = await findJobByOwnerAndUpdate(id, job);
     updatedJob.setupHyperLinks(host, url);
     return {

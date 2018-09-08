@@ -47,6 +47,7 @@ module.exports = class EmployeeController {
   static async getEmployeeById(id, host, originalUrl) {
     const foundEmployee = await findEmployeeById(id);
     if (foundEmployee) {
+      await populate(foundEmployee, 'user', 'username email links');
       foundEmployee.setupHyperLinks(host, originalUrl, { removeAfterSlash: 1 });
       foundEmployee.user.setupHyperLinks(host, '/api/v1/users/');
       return {
@@ -81,10 +82,10 @@ module.exports = class EmployeeController {
 
   /**
    * updates an employee by ID with a given object
-   * @param {*} employee new object to update employee with
-   * @param {*} id id of the employee to update
-   * @param {*} host the host name portion of the requested url
-   * @param {*} originalUrl the requested url after the hostname
+   * @param {object} employee new object to update employee with
+   * @param {string} id id of the employee to update
+   * @param {string} host the host name portion of the requested url
+   * @param {string} originalUrl the requested url after the hostname
    */
   static async updateEmployeeById(employee, id, host, originalUrl) {
     const newEmployee = copyObjectAndAddLastChanged(employee, '_id user');

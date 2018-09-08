@@ -6,10 +6,8 @@ const Job = require('../job/jobModel');
 const Wallet = require('../wallet/walletModel');
 const Work = require('../work/workModel');
 const User = require('../user/userModel');
-const capitalFirstLetter = require('../../util/capitalFirstLetter');
-const copyObject = require('../../util/clonePropertiesToNewObject');
-
-
+const { cloneProperties, capitalizeFirstLetter, populate } = require('../../util/utils');
+//  TODO: extract populate from methods nad  make it seperate only
 class EmployeeService {
   /**
    * calls the employee table with conditions and returns matching employees it finds
@@ -26,7 +24,6 @@ class EmployeeService {
     });
   }
 
-
   /**
    * finds an employee with the given id in the employees table
    * @param {string} id id to find employee by
@@ -36,7 +33,7 @@ class EmployeeService {
     return new Promise((resolve, reject) => {
       if (typeof id !== 'string') reject(new Error(`${typeof id} is not a string`));
 
-      resolve(Employee.findOne({ _id: id }).populate('user', 'username email links'));
+      resolve(Employee.findOne({ _id: id }));
     });
   }
 
@@ -75,23 +72,13 @@ class EmployeeService {
 
   /**
    * populates an objects field with selected fields
-   * @param {*} obj the object to populate
+   * @param {object} obj the object to populate
    * @param {string} path the field/path to populate
    * @param {string} select the fields to of the populated object
    * @returns {Promise} returns a promise
    */
   static populate(obj, path, select) {
-    return new Promise((resolve, reject) => {
-      if (typeof obj !== 'object') reject(new Error(`${typeof obj} is not an object`));
-
-      if (Array.isArray(obj)) reject(new Error('array is not an object'));
-
-      if (typeof path !== 'string') reject(new Error(`${typeof path} is not a string`));
-
-      if (typeof select !== 'string') reject(new Error(`${typeof select} is not a string`));
-
-      resolve(Employee.populate(obj, { path, select }));
-    });
+    return populate(Employee, obj, path, select);
   }
 
   /**
@@ -136,7 +123,7 @@ class EmployeeService {
     let role;
     if (newUser.role) {
       //  TODO: add capitalFirstLeter to the service?
-      role = capitalFirstLetter(newUser.role);
+      role = capitalizeFirstLetter(newUser.role);
     }
     if (!newUser.role) {
       role = 'Employee';
@@ -183,7 +170,7 @@ class EmployeeService {
     //  add every property from obj except for properties in fields
     //  to newBody  to be updated
     //  better solution to delete operator (slow)
-    const newObj = copyObject(obj, fields);
+    const newObj = cloneProperties(obj, fields);
     newObj.lastChanged = moment().format('YYYY/MM/DD');
     return newObj;
   }

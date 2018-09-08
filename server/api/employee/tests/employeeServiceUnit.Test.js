@@ -41,22 +41,22 @@ describe('Employee Service Unit Tests', () => {
     });
     it('should return a promise that eventually resolves to an object', async () => {
       const employeeToFind = { firstName: 'John' };
-      const findAllEmployeesPromise = findAllEmployees(employeeToFind);
-      expect(findAllEmployeesPromise).to.be.a('promise');
-      expect(findAllEmployeesPromise).to.be.fulfilled();
-      expect(findAllEmployeesPromise).to.eventually.be.an('object');
+      await expect(findAllEmployees(employeeToFind))
+        .to.be.a('promise').that.is.eventually.fulfilled()
+        .to.an('object');
     });
-    it('should resolve to an employee object', () => {
+    it('should resolve to an employee object', async () => {
       const employeeToFind = { firstName: 'John' };
-      expect(findAllEmployees(employeeToFind)).to.eventually.have.property('_id');
+      await expect(findAllEmployees(employeeToFind))
+        .to.eventually.have.property('_id');
     });
-    it('should throw if called with an array', () => {
+    it('should throw if called with an array', async () => {
       const employeeToFind = ['firstName: John'];
-      expect(findAllEmployees(employeeToFind)).to.eventually.be.rejectedWith('array is not an object');
+      await expect(findAllEmployees(employeeToFind)).to.eventually.be.rejectedWith('array is not an object');
     });
-    it('should throw if not called with an object', () => {
+    it('should throw if not called with an object', async () => {
       const employeeToFind = 'firstName: John';
-      expect(findAllEmployees(employeeToFind)).to.eventually.be.rejectedWith(`${typeof employeeToFind} is not an object`);
+      await expect(findAllEmployees(employeeToFind)).to.eventually.be.rejectedWith(`${typeof employeeToFind} is not an object`);
     });
     after(() => {
       Employee.find.restore();
@@ -73,28 +73,21 @@ describe('Employee Service Unit Tests', () => {
           links: [],
           SetUpHyperLinks: () => null,
         }];
-        return {
-          found: db.filter(employee => employee._id === obj._id)[0],
-          populate: function populatee() {
-            return this.found;
-          },
-        };
+        return db.filter(employee => employee._id === obj._id)[0];
       });
     });
-    it('should return a promise that eventually resolves to an object', () => {
-      const idToFind = '123';
-      const findEmployeeByIdPromise = findEmployeeById(idToFind);
-      expect(findEmployeeByIdPromise).to.be.a('promise');
-      expect(findEmployeeByIdPromise).to.be.fulfilled();
-      expect(findEmployeeByIdPromise).to.eventually.be.an('object');
+    it('should return a promise that eventually resolves to an object', async () => {
+      await expect(findEmployeeById('123'))
+        .to.be.a('promise').that.is.eventually.fulfilled()
+        .to.an('object');
     });
-    it('should resolve to an employee object', () => {
+    it('should resolve to an employee object', async () => {
       const idToFind = '123';
-      expect(findEmployeeById(idToFind)).to.eventually.have.property('_id');
+      await expect(findEmployeeById(idToFind)).to.eventually.have.property('_id');
     });
-    it('should throw if not called with a string', () => {
+    it('should throw if not called with a string', async () => {
       const idToFind = {};
-      expect(findEmployeeById(idToFind)).to.eventually.be.rejectedWith(`${typeof idToFind} is not a string`);
+      await expect(findEmployeeById(idToFind)).to.eventually.be.rejectedWith(`${typeof idToFind} is not a string`);
     });
     after(() => {
       Employee.findOne.restore();
@@ -104,7 +97,7 @@ describe('Employee Service Unit Tests', () => {
     before(() => {
       sinon.stub(Employee, 'findOneAndUpdate').callsFake((toFindBy, toUpdate) => toUpdate.$set);
     });
-    it('should return a promise that eventually resolves to an object', () => {
+    it('should return a promise that eventually resolves to an object', async () => {
       const idToFind = '123';
       const newUpdated = {
         _id: '123',
@@ -114,12 +107,12 @@ describe('Employee Service Unit Tests', () => {
         links: [],
         SetUpHyperLinks: () => null,
       };
-      const updateEmployeeByIdPromise = updateEmployeeById(newUpdated, idToFind);
-      expect(updateEmployeeByIdPromise).to.be.a('promise');
-      expect(updateEmployeeByIdPromise).to.be.fulfilled();
-      expect(updateEmployeeByIdPromise).to.eventually.be.an('object');
+      await expect(updateEmployeeById(newUpdated, idToFind))
+        .to.be.a('promise')
+        .that.is.eventually.fulfilled()
+        .to.an('object');
     });
-    it('should resolve to an employee object', () => {
+    it('should resolve to an employee object', async () => {
       const idToFind = '123';
       const newUpdated = {
         _id: '123',
@@ -129,19 +122,22 @@ describe('Employee Service Unit Tests', () => {
         links: [],
         SetUpHyperLinks: () => null,
       };
-      expect(updateEmployeeById(newUpdated, idToFind)).to.eventually.have.property('_id');
+      await expect(updateEmployeeById(newUpdated, idToFind))
+        .to.eventually.have.property('_id');
     });
-    it('should throw if employee arguement is an array', () => {
+    it('should throw if employee arguement is an array', async () => {
       const idToFind = '123';
       const newUpdated = ['_id: 123'];
-      expect(updateEmployeeById(newUpdated, idToFind)).to.eventually.be.rejectedWith('array is not an object');
+      await expect(updateEmployeeById(newUpdated, idToFind))
+        .to.eventually.be.rejectedWith('array is not an object');
     });
-    it('should throw if employee arguement is not an object', () => {
+    it('should throw if employee arguement is not an object', async () => {
       const idToFind = '123';
       const newUpdated = '_id: 123';
-      expect(updateEmployeeById(newUpdated, idToFind)).to.eventually.be.rejectedWith(`${typeof newUpdated} is not an object`);
+      await expect(updateEmployeeById(newUpdated, idToFind)).
+        to.eventually.be.rejectedWith(`${typeof newUpdated} is not an object`);
     });
-    it('should throw if id arguement is not a string', () => {
+    it('should throw if id arguement is not a string', async () => {
       const idToFind = 123;
       const newUpdated = {
         _id: '123',
@@ -151,7 +147,8 @@ describe('Employee Service Unit Tests', () => {
         links: [],
         SetUpHyperLinks: () => null,
       };
-      expect(updateEmployeeById(newUpdated, idToFind)).to.eventually.be.rejectedWith(`${typeof idToFind} is not a string`);
+      await expect(updateEmployeeById(newUpdated, idToFind))
+        .to.eventually.be.rejectedWith(`${typeof idToFind} is not a string`);
     });
     after(() => {
       Employee.findOneAndUpdate.restore();
@@ -171,20 +168,22 @@ describe('Employee Service Unit Tests', () => {
         return db.filter(employee => employee._id === obj._id)[0];
       });
     });
-    it('should return a promise that eventually resolves to an object', () => {
+    it('should return a promise that eventually resolves to an object', async () => {
       const id = '123';
-      const deleteEmployeeByIdPromise = deleteEmployeeById(id);
-      expect(deleteEmployeeByIdPromise).to.be.a('promise');
-      expect(deleteEmployeeByIdPromise).to.be.fulfilled();
-      expect(deleteEmployeeByIdPromise).to.eventually.be.an('object');
+      await expect(deleteEmployeeById(id))
+        .to.be.a('promise')
+        .that.is.eventually.fulfilled()
+        .to.an('object');
     });
-    it('should resolve to an employee object', () => {
+    it('should resolve to an employee object', async () => {
       const id = '123';
-      expect(deleteEmployeeById(id)).to.eventually.have.property('_id');
+      await expect(deleteEmployeeById(id))
+        .to.eventually.have.property('_id');
     });
-    it('should throw if id arguement is not a string', () => {
+    it('should throw if id arguement is not a string', async () => {
       const id = 123;
-      expect(deleteEmployeeById(id)).to.eventually.be.rejectedWith(`${typeof id} is not a string`);
+      await expect(deleteEmployeeById(id))
+        .to.eventually.be.rejectedWith(`${typeof id} is not a string`);
     });
     after(() => {
       Employee.findOneAndRemove.restore();
@@ -198,7 +197,7 @@ describe('Employee Service Unit Tests', () => {
       sinon.stub(Work, 'create');
       sinon.stub(User, 'create');
     });
-    it('should return a promise that eventually resolves to an object', () => {
+    it('should return a promise that eventually resolves to an object', async () => {
       const newEmployee = {
         _id: '123',
         firstName: 'John',
@@ -207,12 +206,12 @@ describe('Employee Service Unit Tests', () => {
         links: [],
         SetUpHyperLinks: () => null,
       };
-      const createEmployeePromise = createEmployee(newEmployee);
-      expect(createEmployeePromise).to.be.a('promise');
-      expect(createEmployee(newEmployee)).to.be.fulfilled();
-      expect(createEmployeePromise).to.eventually.be.an('object');
+      await expect(createEmployee(newEmployee))
+        .to.be.a('promise')
+        .that.is.eventually.fulfilled()
+        .to.an('object');
     });
-    it('should resolve to an employee object', () => {
+    it('should resolve to an employee object', async () => {
       const newEmployee = {
         _id: '123',
         firstName: 'John',
@@ -221,15 +220,18 @@ describe('Employee Service Unit Tests', () => {
         links: [],
         SetUpHyperLinks: () => null,
       };
-      expect(createEmployee(newEmployee)).to.eventually.have.property('_id');
+      await expect(createEmployee(newEmployee))
+        .to.eventually.have.property('_id');
     });
-    it('should throw if arguement is an array', () => {
+    it('should throw if arguement is an array', async () => {
       const newEmployee = ['_id: 123'];
-      expect(createEmployee(newEmployee)).to.eventually.be.rejectedWith('array is not an object');
+      await expect(createEmployee(newEmployee))
+        .to.eventually.be.rejectedWith('array is not an object');
     });
-    it('should throw if arguement is not an object', () => {
+    it('should throw if arguement is not an object', async () => {
       const newEmployee = '_id: 123';
-      expect(createEmployee(newEmployee)).to.eventually.be.rejectedWith(`${typeof newEmployee} is not an object`);
+      await expect(createEmployee(newEmployee))
+        .to.eventually.be.rejectedWith(`${typeof newEmployee} is not an object`);
     });
     after(() => {
       Employee.create.restore();
@@ -240,7 +242,7 @@ describe('Employee Service Unit Tests', () => {
     });
   });
   describe('createEmployeeObject', () => {
-    it('should return a promise that eventually resolves to an object', () => {
+    it('should return a promise that eventually resolves to an object', async () => {
       const employeeToCreate = {
         firstName: 'John',
         lastName: 'Smith',
@@ -256,12 +258,12 @@ describe('Employee Service Unit Tests', () => {
         phoneNumber: '',
         startDate: '',
       };
-      const createEmployeeObjectPromise = createEmployeeObject(employeeToCreate);
-      expect(createEmployeeObjectPromise).to.be.a('promise');
-      expect(createEmployeeObjectPromise).to.be.fulfilled();
-      expect(createEmployeeObjectPromise).to.eventually.be.an('object');
+      await expect(createEmployeeObject(employeeToCreate))
+        .to.be.a('promise')
+        .that.is.eventually.fulfilled()
+        .to.an('object');
     });
-    it('should resolve an employee template object', () => {
+    it('should resolve an employee template object', async () => {
       const userToCreate = {
         email: '',
         role: 'administrator',
@@ -277,7 +279,8 @@ describe('Employee Service Unit Tests', () => {
         phoneNumber: '',
         startDate: '',
       };
-      expect(createEmployeeObject(employeeToCreate, userToCreate)).to.eventually.have.property('_id');
+      await expect(createEmployeeObject(employeeToCreate, userToCreate))
+        .to.eventually.have.property('_id');
     });
     it('should default role property to "Employee" if none is found', async () => {
       const employeeToCreate = {
@@ -295,8 +298,9 @@ describe('Employee Service Unit Tests', () => {
         phoneNumber: '',
         startDate: '',
       };
-      const result = await createEmployeeObject(employeeToCreate);
-      expect(result.user.role).to.be.equal('Employee');
+      await expect(createEmployeeObject(employeeToCreate))
+        .to.eventually.have.nested.property('user.role')
+        .that.equals('Employee');
     });
     it('should capitalize first letter of role property when given a value', async () => {
       const userToCreate = {
@@ -314,16 +318,19 @@ describe('Employee Service Unit Tests', () => {
         phoneNumber: '',
         startDate: '',
       };
-      const result = await createEmployeeObject(employeeToCreate, userToCreate);
-      expect(result.user.role[0]).to.be.equal(userToCreate.role[0].toUpperCase());
+      await expect(createEmployeeObject(employeeToCreate, userToCreate))
+        .to.eventually.have.nested.property('user.role[0]')
+        .that.equals(userToCreate.role[0].toUpperCase());
     });
-    it('should throw if employee arguement is an array', () => {
+    it('should throw if employee arguement is an array', async () => {
       const employee = ['dsfdf'];
-      expect(createEmployeeObject(employee)).to.eventually.be.rejectedWith('array is not an object');
+      await expect(createEmployeeObject(employee))
+        .to.eventually.be.rejectedWith('array is not an object');
     });
-    it('should throw if employee arguement is not an object', () => {
+    it('should throw if employee arguement is not an object', async () => {
       const employee = 'dsfdf';
-      expect(createEmployeeObject(employee)).to.eventually.be.rejectedWith(`${typeof employee} is not an object`);
+      await expect(createEmployeeObject(employee))
+        .to.eventually.be.rejectedWith(`${typeof employee} is not an object`);
     });
   });
   describe('populate', () => {
@@ -337,44 +344,49 @@ describe('Employee Service Unit Tests', () => {
         SetUpHyperLinks: () => null,
       });
     });
-    it('should return a promise that eventually resolves to an object', () => {
+    it('should return a promise that eventually resolves to an object', async () => {
       const obj = { id: '123' };
       const path = 'test';
       const select = 'test';
-      const populatePromise = populate(obj, path, select);
-      expect(populatePromise).to.be.a('promise');
-      expect(populatePromise).to.be.fulfilled();
-      expect(populatePromise).to.eventually.be.an('object');
+      await expect(populate(obj, path, select))
+        .to.be.a('promise')
+        .that.is.eventually.fulfilled()
+        .to.an('object');
     });
-    it('should resolve to an employee object', () => {
+    it('should resolve to an employee object', async () => {
       const obj = { id: '123' };
       const path = 'test';
       const select = 'test';
-      expect(populate(obj, path, select)).to.eventually.have.property('_id');
+      await expect(populate(obj, path, select))
+        .to.eventually.have.property('_id');
     });
-    it('should throw if obj arguement is an array', () => {
+    it('should throw if obj arguement is an array', async () => {
       const obj = ['id: 123'];
       const path = 'test';
       const select = 'test';
-      expect(populate(obj, path, select)).to.eventually.be.rejectedWith('array is not an object');
+      await expect(populate(obj, path, select))
+        .to.eventually.be.rejectedWith('array is not an object');
     });
-    it('should throw if obj arguement is not an object', () => {
+    it('should throw if obj arguement is not an object', async () => {
       const obj = ' id: 123';
       const path = 'test';
       const select = 'test';
-      expect(populate(obj, path, select)).to.eventually.be.rejectedWith(`${typeof obj} is not an object`);
+      await expect(populate(obj, path, select))
+        .to.eventually.be.rejectedWith(`${typeof obj} is not an object`);
     });
-    it('should throw if path arguement is not a string', () => {
+    it('should throw if path arguement is not a string', async () => {
       const obj = { id: 123 };
       const path = ['test'];
       const select = 'test';
-      expect(populate(obj, path, select)).to.eventually.be.rejectedWith(`${typeof path} is not a string`);
+      await expect(populate(obj, path, select))
+        .to.eventually.be.rejectedWith(`${typeof path} is not a string`);
     });
-    it('should throw if select is not a string', () => {
+    it('should throw if select is not a string', async () => {
       const obj = { id: 123 };
       const path = 'test';
       const select = { key: 'test' };
-      expect(populate(obj, path, select)).to.eventually.be.rejectedWith(`${typeof select} is not a string`);
+      await expect(populate(obj, path, select))
+        .to.eventually.be.rejectedWith(`${typeof select} is not a string`);
     });
     after(() => {
       Employee.populate.restore();
