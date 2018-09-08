@@ -6,7 +6,7 @@ const Job = require('../job/jobModel');
 const Wallet = require('../wallet/walletModel');
 const Work = require('../work/workModel');
 const User = require('../user/userModel');
-const { cloneProperties, capitalizeFirstLetter, populate } = require('../../util/utils');
+const { cloneProperties, capitalizeFirstLetter, populate, hasKeys } = require('../../util/utils');
 //  TODO: extract populate from methods nad  make it seperate only
 class EmployeeService {
   /**
@@ -155,10 +155,7 @@ class EmployeeService {
    * @param {object} object
    */
   static hasKeys(obj) {
-    if (Object.keys(obj).length > 0) {
-      return true;
-    }
-    return false;
+    return hasKeys(obj);
   }
 
   /**

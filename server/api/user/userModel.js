@@ -67,7 +67,7 @@ userSchema.methods = {
   },
 };
 
-userSchema.method('setupHyperLinks', function setupHL(hostName, url) {
+userSchema.method('setupHyperLinks', function setupHL(hostName, url, options) {
   const hateaosEndpoints = [
     {
       rel: 'self',
@@ -85,7 +85,7 @@ userSchema.method('setupHyperLinks', function setupHL(hostName, url) {
       description: 'delete this user',
     },
   ];
-  hlGenerator(this, hostName, url, hateaosEndpoints);
+  hlGenerator(this, hostName, url, hateaosEndpoints, options);
 });
 
 module.exports = mongoose.model('User', userSchema);

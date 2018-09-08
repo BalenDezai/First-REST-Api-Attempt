@@ -29,6 +29,17 @@ module.exports = class Utils {
     return `${str.substring(0, 1).toUpperCase()}${str.substring(1, str.length).toLowerCase()}`;
   }
 
+  /**
+   * checks if an object has any keys or not
+   * @param {object} object
+   */
+  static hasKeys(obj) {
+    if (Object.keys(obj).length > 0) {
+      return true;
+    }
+    return false;
+  }
+
   static cloneProperties(objectToCopy, excludeProps) {
     const args = excludeProps.split(' ');
     const keys = Object.keys(objectToCopy);

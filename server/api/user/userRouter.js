@@ -1,21 +1,39 @@
 const userRouter = require('express').Router();
-const UserController = require('./userController');
+const c = require('../../util/controllerHandler');
+const p = require('../../util/paramHandler');
 const MessageService = require('../../util/MessageService');
 const validateFields = require('../../middleware/validationMiddleware/userControllerValidation');
+const userExists = require('../../middleware/authMIddleware/userExists');
 const validationErrorHandler = require('../../middleware/validationMiddleware/validationErrorHandler');
+const {
+  getAllUsers,
+  getOneUser,
+  createOneUser,
+  updateOneUser,
+  deleteOneUser,
+} = require('./userController');
 
-userRouter.param('id', UserController.idValidParam);
+userRouter.param('id', p(req => req.params.id));
 
 userRouter.route('/')
-  .get(UserController.getAllUsers)
-  .post(validateFields.createFields, validationErrorHandler(), UserController.createOneUser)
+  .get(c(getAllUsers, req => [req.query, req.headers.host, req.originalUrl]))
+  .post(
+    validateFields.createFields,
+    validationErrorHandler(),
+    userExists(),
+    c(createOneUser, req => [req.body, req.headers.host, req.originalUrl]),
+  )
   .patch(MessageService(405, 'Use /users/id to update a user'))
   .delete(MessageService(405, 'Use /users/id to delete a user'));
 
 userRouter.route('/:id')
-  .get(UserController.getOneUser)
+  .get(c(getOneUser, req => [req.params.id, req.headers.host, req.originalUrl]))
   .post(MessageService(405, 'Use /users/ to create a user'))
-  .patch(validateFields.updateFields, validationErrorHandler(), UserController.updateOneUser)
-  .delete(UserController.deleteOneUser);
+  .patch(
+    validateFields.updateFields,
+    validationErrorHandler(),
+    c(updateOneUser, req => [req.body, req.params.id, req.headers.host, req.originalUrl]),
+  )
+  .delete(c(deleteOneUser, req => [req.params.id]));
 
 module.exports = userRouter;
